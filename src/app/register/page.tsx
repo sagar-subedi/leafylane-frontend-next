@@ -1,4 +1,6 @@
-"use client"
+"use client";
+
+import { Suspense } from 'react';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Form, Button, Row, Col } from 'react-bootstrap';
@@ -8,6 +10,7 @@ import { register } from '@/store/slices/userSlice';
 import FormContainer from '@/components/FormContainer';
 import FullPageLoader from '@/components/FullPageLoader';
 import { USER_REGISTER_RESET } from '@/constants/userConstants';
+import { useSearchParams } from 'next/navigation';
 
 const RegisterScreen = (props) => {
   const [userName, setUserName] = useState('');
@@ -16,12 +19,12 @@ const RegisterScreen = (props) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setconfirmPassword] = useState('');
   const [message, setMessage] = useState(null);
-
   const dispatch = useDispatch();
-  const userRegister = useSelector((state) => state.userRegister);
-  let { loading, error, userInfo } = userRegister;
+  const userRegister = useSelector((state) => state.user.register);
+  const { loading, error, userInfo } = userRegister;
 
-  const redirect = props.location.search ? props.location.search.substring(props.location.search.indexOf('=') + 1) : '/';
+  const params = useSearchParams();
+  const redirect = params.get("redirect") || "/"
 
   useEffect(() => {
     if (userInfo) {
@@ -42,7 +45,8 @@ const RegisterScreen = (props) => {
   };
 
   return (
-    <div>
+   <Suspense fallback={<div>Loading...</div>}>
+     <div>
       <FormContainer>
         <h1>Sign Up</h1>
         {message && <Message variant='danger'>{message}</Message>}
@@ -98,6 +102,7 @@ const RegisterScreen = (props) => {
       </FormContainer>
       {loading && <FullPageLoader></FullPageLoader>}
     </div>
+   </Suspense>
   );
 };
 

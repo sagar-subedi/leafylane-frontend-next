@@ -61,7 +61,7 @@ const UserEditScreen = () => {
   const submitHandler = (e) => {
     e.preventDefault();
 
-    let roles = Array.from(checkedItems)
+    const roles = Array.from(checkedItems)
       .filter((item) => item[1] === true)
       .map((i) => {
         return i[0];

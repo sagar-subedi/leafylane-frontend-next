@@ -32,7 +32,11 @@ const ShippingScreen = () => {
   const { addresses, loading: addressListLoading, error: addressListError } = addressList;
 
   const addressSave = useSelector((state) => state.address.saveAddress);
-  const { success, loading: addressSaveLoading, error: addressSaveError } = addressSave;
+  const {  loading: addressSaveLoading, error: addressSaveError } = addressSave;
+
+  const getShippingAddress = async () => {
+    dispatch(getMyAddresses());
+  };
 
   useEffect(() => {
     getShippingAddress();
@@ -40,11 +44,9 @@ const ShippingScreen = () => {
       setBillingAddressId(addresses[0].addressId);
       setShippingAddressId(addresses[0].addressId);
     }
-  }, [dispatch]);
+  }, [addresses, getShippingAddress,dispatch]);
 
-  const getShippingAddress = async () => {
-    dispatch(getMyAddresses());
-  };
+
 
   const saveAddressHandler = async (e) => {
     e.preventDefault();

@@ -6,9 +6,10 @@ import paymentReducer from '@/store/slices/paymentSlice'
 import productReducer from '@/store/slices/productSlice'
 import cartReducer from '@/store/slices/cartSlice'
 import addressReducer, { deleteAddress, getMyAddresses, saveAddress } from  '@/store/slices/addressSlice'
+import { getFromLocalStorage } from '@/utils/LocalStorageUtils';
 // Local storage defaults
-const userInfoFromStorage = typeof window !== 'undefined' && localStorage.getItem('userInfo') 
-  ? JSON.parse(localStorage.getItem('userInfo')!) 
+const userInfoFromStorage = typeof window !== 'undefined' && getFromLocalStorage('userInfo') 
+  ? JSON.parse(getFromLocalStorage('userInfo')!) 
   : null;
 
 // Initial state

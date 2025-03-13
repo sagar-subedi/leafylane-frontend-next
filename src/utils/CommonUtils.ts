@@ -1,4 +1,5 @@
 import {jwtDecode} from 'jwt-decode';
+import { getFromLocalStorage } from './LocalStorageUtils';
 
 export const getErrorMessage = (error) => {
   return error
@@ -15,10 +16,11 @@ export const getErrorMessage = (error) => {
 };
 
 export const isAdmin = () => {
-  const userInfoLocalStorage = localStorage.getItem('userInfo');
+  // return true;
+  const userInfoLocalStorage = getFromLocalStorage('userInfo');
   if (userInfoLocalStorage) {
     const token = JSON.parse(userInfoLocalStorage).token;
-    let decodedToken = jwtDecode(token);
+    const decodedToken = jwtDecode(token);
     return decodedToken?.authorities?.includes('ROLE_ADMIN');
   }
   return false;

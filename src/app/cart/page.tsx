@@ -1,4 +1,4 @@
-// "use client"
+"use client";
 
 // import React, { useEffect } from 'react';
 // import Link from 'next/link';
@@ -104,9 +104,7 @@
 
 // export default CartScreen;
 
-"use client";
-
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";

@@ -6,11 +6,9 @@ import Message from "@/components/Message";
 import Loader from "@/components/Loader";
 import { listOrdersAdmin } from "@/store/slices/orderSlice";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 const OrderListScreen = () => {
   const dispatch = useDispatch();
-  const router = useRouter();
 
   const orderList = useSelector((state) => state.order.listOrders);
   const { loading, error, orders } = orderList;

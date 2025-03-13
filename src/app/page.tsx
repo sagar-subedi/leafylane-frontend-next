@@ -31,8 +31,7 @@
 
 
 
-
-import Paginate from '@/components/Paginate';
+import { Suspense } from 'react';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Product from '@/components/Product';
@@ -52,13 +51,13 @@ const HomeScreen = () => {
   }, [dispatch]);
 
   const handlePageClick = (data) => {
-    let selected = data.selected;
+    const selected = data.selected;
     dispatch(listProducts(selected));
   };
 
   return (
     <>
-      <h1>Latest Products</h1>
+     <h1>Latest Products</h1>
       {error ? (
         <Message variant='danger'></Message>
       ) : (

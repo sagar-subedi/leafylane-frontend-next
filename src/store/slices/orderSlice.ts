@@ -7,15 +7,16 @@ import {
   getAllOrdersApi 
 } from '@/utils/RestApiCalls';
 import { getErrorMessage } from '@/utils/CommonUtils';
+import { getFromLocalStorage } from '@/utils/LocalStorageUtils';
 
-const billingAddressId = typeof window !== 'undefined' && localStorage.getItem('billingAddressId') 
-  ? localStorage.getItem('billingAddressId') 
+const billingAddressId = typeof window !== 'undefined' && getFromLocalStorage('billingAddressId') 
+  ? getFromLocalStorage('billingAddressId') 
   : null;
-const shippingAddressId = typeof window !== 'undefined' && localStorage.getItem('shippingAddressId') 
-  ? localStorage.getItem('shippingAddressId') 
+const shippingAddressId = typeof window !== 'undefined' && getFromLocalStorage('shippingAddressId') 
+  ? getFromLocalStorage('shippingAddressId') 
   : null;
-const paymentMethodId = typeof window !== 'undefined' && localStorage.getItem('paymentMethodId') 
-  ? localStorage.getItem('paymentMethodId') 
+const paymentMethodId = typeof window !== 'undefined' && getFromLocalStorage('paymentMethodId') 
+  ? getFromLocalStorage('paymentMethodId') 
   : null;
 
 

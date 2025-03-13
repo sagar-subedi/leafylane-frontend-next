@@ -3,6 +3,7 @@ import axios from 'axios';
 import qs from 'qs';
 
 import { USER_LOGOUT } from '@/constants/userConstants';
+import { getFromLocalStorage } from './LocalStorageUtils';
 // import store from '@/store/store1';
 
 axios.interceptors.response.use(
@@ -21,7 +22,7 @@ axios.interceptors.response.use(
 
     if (error.response.status === 401) {
       console.log('Refreshing Token');
-      const refreshToken = JSON.parse(localStorage.getItem('userInfo'))?.refresh_token;
+      const refreshToken = JSON.parse(getFromLocalStorage('userInfo'))?.refresh_token;
       if (refreshToken) {
         const tokenParts = JSON.parse(atob(refreshToken.split('.')[1]));
         // exp date in token is expressed in seconds, while now() returns milliseconds:
@@ -41,7 +42,7 @@ axios.interceptors.response.use(
               axiosConfig
             )
             .then((response) => {
-              const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+              const userInfo = JSON.parse(getFromLocalStorage('userInfo'));
               const updatedUserInfo = {
                 ...userInfo,
                 token: response.data.access_token
@@ -215,7 +216,7 @@ export const createProductReviewApi = async (createProductReviewRequestBody) => 
 };
 
 export const uploadImageApi = async (axiosConfig, formData) => {
-  const accessToken = JSON.parse(localStorage.getItem('userInfo'))?.token;
+  const accessToken = JSON.parse(getFromLocalStorage('userInfo'))?.token;
 
   if (accessToken) {
     axiosConfig.headers.Authorization = `Bearer ${accessToken}`;
@@ -259,7 +260,7 @@ export const getCartDetailsApi = async () => {
     return response.data;
   });
 
-  let sortedCart = {
+  const sortedCart = {
     ...cartDetails,
     cartItems: cartDetails.cartItems.sort((a, b) => {
       return a.cartItemId.localeCompare(b.cartItemId);
@@ -365,7 +366,7 @@ const getAxiosConfig = () => {
     }
   };
 
-  const accessToken = JSON.parse(localStorage.getItem('userInfo'))?.token;
+  const accessToken = JSON.parse(getFromLocalStorage('userInfo'))?.token;
 
   if (accessToken) {
     axiosConfig.headers.Authorization = `Bearer ${accessToken}`;

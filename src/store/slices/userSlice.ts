@@ -10,13 +10,14 @@ import {
   updateUserApi,
 } from "@/utils/RestApiCalls";
 import { getErrorMessage } from "@/utils/CommonUtils";
+import { getFromLocalStorage } from "@/utils/LocalStorageUtils";
 
-// const userInfoFromStorage = typeof window !== 'undefined' && localStorage.getItem('userInfo') 
-// ? JSON.parse(localStorage.getItem('userInfo')!) 
+// const userInfoFromStorage = typeof window !== 'undefined' && getFromLocalStorage('userInfo') 
+// ? JSON.parse(getFromLocalStorage('userInfo')!) 
 //   : null;
 
-const userInfoFromStorage = typeof window !== 'undefined' && localStorage.getItem('userInfo') 
-? JSON.parse(localStorage.getItem('userInfo')!) 
+const userInfoFromStorage = typeof window !== 'undefined' && getFromLocalStorage('userInfo') 
+? JSON.parse(getFromLocalStorage('userInfo')!) 
   : {userName:null};
 
 export const login = createAsyncThunk(
@@ -74,7 +75,7 @@ export const updateUserProfile = createAsyncThunk(
     try {
       await putUserInfoApi(user);
       const updatedUserInfo = {
-        ...JSON.parse(localStorage.getItem("userInfo")),
+        ...JSON.parse(getFromLocalStorage("userInfo")),
         ...user,
       };
       localStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));

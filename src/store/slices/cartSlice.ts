@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getErrorMessage } from '@/utils/CommonUtils';
 import { addToCartApi, getCartDetailsApi, removeCartItemApi } from '@/utils/RestApiCalls';
+import { setToLocalStorage } from '@/utils/LocalStorageUtils';
 
 // Async Thunks for API calls
 export const addToCart = createAsyncThunk(
@@ -56,8 +57,10 @@ const initialState = {
     success: false,
     error: null,
   },
-  shippingAddress: JSON.parse(localStorage.getItem('shippingAddress')) || {},
-  paymentMethod: JSON.parse(localStorage.getItem('paymentMethod')) || '',
+  // shippingAddress: JSON.parse(getFromLocalStorage('shippingAddress')) || {},
+  // paymentMethod: JSON.parse(getFromLocalStorage('paymentMethod')) || '',
+  shippingAddress: {},
+  paymentMethod: ''
 };
 
 // Create the slice
@@ -67,7 +70,7 @@ const cartSlice = createSlice({
   reducers: {
     saveShippingAddress(state, action) {
       state.shippingAddress = action.payload;
-      localStorage.setItem('shippingAddress', JSON.stringify(action.payload));
+      setToLocalStorage('shippingAddress', JSON.stringify(action.payload));
     },
     savePaymentMethod(state, action) {
       state.paymentMethod = action.payload;
