@@ -94,6 +94,29 @@ const productSlice = createSlice({
       error: null,
       reviews: []
     },
+    deleteProduct: {
+      loading: false,
+      error: null,
+      success: false
+    },
+    listProduct: {
+      products: [],
+      loading: false,
+      error: null,
+      success: false
+    }, 
+    createProduct: {
+      products: [],
+      loading: false,
+      error: null,
+      success: false
+    },    
+    updateProduct: {
+      products: [],
+      loading: false,
+      error: null,
+      success: false
+    },
     loading: false,
     error: null,
     image: null,

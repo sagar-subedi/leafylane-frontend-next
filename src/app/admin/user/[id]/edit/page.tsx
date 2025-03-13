@@ -1,5 +1,7 @@
+"use client"
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
 import { Form, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '@/components/Message';
@@ -9,43 +11,47 @@ import { getUserDetails, updateUser } from '@/store/slices/userSlice';
 import { USER_UPDATE_RESET } from '@/constants/userConstants';
 import { getAllRolesApi } from '@/utils/RestApiCalls';
 
-const UserEditScreen = ({ match, history }) => {
-  const userId = match.params.id;
+const UserEditScreen = () => {
+  const userId = useParams();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [roles, setRoles] = useState([]);
 
   const dispatch = useDispatch();
-  const userDetails = useSelector((state) => state.userDetails);
-  const { loading, error, user } = userDetails;
+  const userDetails = useSelector((state) => state.user);
+  const { loading, error, userInfo } = userDetails;
 
-  const userUpdate = useSelector((state) => state.userUpdate);
+  const userUpdate = useSelector((state) => state.user.updateUserProfile);
   const { loading: loadingUpdate, error: errorUpdate, success: successUpdate } = userUpdate;
 
   const [checkedItems, setCheckedItems] = useState(new Map());
+  const router = useRouter();
 
-  useEffect(async () => {
-    if (successUpdate) {
-      dispatch({ type: USER_UPDATE_RESET });
-      history.push('/admin/userlist');
-    } else {
-      if (!user.userName || user.userId !== userId) {
-        dispatch(getUserDetails(userId));
+  useEffect(() => {
+    const fetchData = async () => {
+      if (successUpdate) {
+        dispatch({ type: USER_UPDATE_RESET });
+        router.push('/admin/userlist');
       } else {
-        setFirstName(user.firstName);
-        setLastName(user.lastName);
-        setEmail(user.email);
-        user.roles.forEach((role) => {
-          checkedItems.set(role.roleName, true);
-          setCheckedItems(new Map(checkedItems));
-        });
+        if (!userInfo.userName || userInfo.userId !== userId) {
+          dispatch(getUserDetails(userId));
+        } else {
+          setFirstName(userInfo.firstName);
+          setLastName(userInfo.lastName);
+          setEmail(userInfo.email);
+          userInfo.roles.forEach((role) => {
+            checkedItems.set(role.roleName, true);
+            setCheckedItems(new Map(checkedItems));
+          });
+        }
       }
-    }
-    await getAllRolesApi().then((roles) => {
-      setRoles(roles);
-    });
-  }, [dispatch, history, userId, user, successUpdate]);
+      const rolesData = await getAllRolesApi();
+      setRoles(rolesData);
+    };
+
+    fetchData();
+  }, [dispatch, router, userId, userInfo, successUpdate]);
 
   const handleChange = (event) => {
     checkedItems.set(event.target.name, event.target.checked);

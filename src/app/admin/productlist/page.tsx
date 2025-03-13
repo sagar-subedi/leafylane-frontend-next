@@ -1,76 +1,78 @@
-import React, { useEffect } from 'react';
-import Link from 'next/link';
-import { Table, Button, Row, Col } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import { isAdmin } from '@/utils/CommonUtils';
-import Message from '@/components/Message';
-import Loader from '@/components/Loader';
-import { listProducts, deleteProduct } from '@/store/slices/productSlice';
-import { PRODUCT_CREATE_RESET } from '@/constants/productConstants';
-import ReactPaginate from 'react-paginate';
+"use client";
 
-const ProductListScreen = ({ history, match }) => {
+import React, { useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Table, Button, Row, Col } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { isAdmin } from "@/utils/CommonUtils";
+import Message from "@/components/Message";
+import Loader from "@/components/Loader";
+import { listProducts, deleteProduct } from "@/store/slices/productSlice";
+import { PRODUCT_CREATE_RESET } from "@/constants/productConstants";
+import ReactPaginate from "react-paginate";
+
+const ProductListScreen = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
 
-  const productList = useSelector((state) => state.productList);
+  const productList = useSelector((state) => state.product);
   const { loading, error, products, pageResponse } = productList;
 
-  const productDelete = useSelector((state) => state.productDelete);
+  const productDelete = useSelector((state) => state.product.deleteProduct);
   const { loading: loadingDelete, error: errorDelete, success: successDelete } = productDelete;
 
-  const productCreate = useSelector((state) => state.productCreate);
+  const productCreate = useSelector((state) => state.product.createProduct);
   const { loading: loadingCreate, error: errorCreate, success: successCreate, product: createdProduct } = productCreate;
 
-  const userLogin = useSelector((state) => state.userLogin);
+  const userLogin = useSelector((state) => state.user);
   const { userInfo } = userLogin;
 
   useEffect(() => {
     dispatch({ type: PRODUCT_CREATE_RESET });
-
     if (!userInfo || !isAdmin()) {
-      history.push('/login');
+      router.push("/login");
     }
     dispatch(listProducts(0));
-  }, [dispatch, history, userInfo, successDelete, successCreate, createdProduct]);
+  }, [dispatch, router, userInfo, successDelete, successCreate, createdProduct]);
 
   const deleteHandler = (id) => {
-    if (window.confirm('Are you sure')) {
+    if (window.confirm("Are you sure")) {
       dispatch(deleteProduct(id));
     }
   };
 
   const createProductHandler = () => {
-    history.push('/admin/product/create');
+    router.push("/admin/product/create");
   };
 
   const handlePageClick = (data) => {
-    let selected = data.selected;
-    dispatch(listProducts(selected));
+    dispatch(listProducts(data.selected));
   };
 
   return (
     <>
-      <Row className='align-items-center'>
+      <Row className="align-items-center">
         <Col>
           <h1>Products</h1>
         </Col>
-        <Col className='text-right'>
-          <Button className='my-3' onClick={createProductHandler}>
-            <i className='fas fa-plus'></i> Create Product
+        <Col className="text-right">
+          <Button className="my-3" onClick={createProductHandler}>
+            <i className="fas fa-plus"></i> Create Product
           </Button>
         </Col>
       </Row>
       {loadingDelete && <Loader />}
-      {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
+      {errorDelete && <Message variant="danger">{errorDelete}</Message>}
       {loadingCreate && <Loader />}
-      {errorCreate && <Message variant='danger'>{errorCreate}</Message>}
+      {errorCreate && <Message variant="danger">{errorCreate}</Message>}
       {loading ? (
         <Loader />
       ) : error ? (
-        <Message variant='danger'>{error}</Message>
+        <Message variant="danger">{error}</Message>
       ) : (
         <>
-          <Table striped bordered hover responsive className='table-sm'>
+          <Table striped bordered hover responsive className="table-sm">
             <thead>
               <tr>
                 <th>ID</th>
@@ -93,12 +95,12 @@ const ProductListScreen = ({ history, match }) => {
                   <td>{product.availableItemCount}</td>
                   <td>
                     <Link href={`/admin/product/${product.productId}/edit`}>
-                      <Button variant='light' className='btn-sm'>
-                        <i className='fas fa-edit'></i>
+                      <Button variant="light" className="btn-sm">
+                        <i className="fas fa-edit"></i>
                       </Button>
                     </Link>
-                    <Button variant='danger' className='btn-sm' onClick={() => deleteHandler(product.productId)}>
-                      <i className='fas fa-trash'></i>
+                    <Button variant="danger" className="btn-sm" onClick={() => deleteHandler(product.productId)}>
+                      <i className="fas fa-trash"></i>
                     </Button>
                   </td>
                 </tr>
@@ -108,21 +110,21 @@ const ProductListScreen = ({ history, match }) => {
         </>
       )}
 
-      <Row className='m-5 justify-content-md-center'>
+      <Row className="m-5 justify-content-md-center">
         <ReactPaginate
-          previousLabel={'Previous'}
-          nextLabel={'Next'}
-          breakLabel={'...'}
-          breakClassName={'break-me'}
+          previousLabel={"Previous"}
+          nextLabel={"Next"}
+          breakLabel={"..."}
+          breakClassName={"break-me"}
           pageCount={pageResponse?.totalPages}
-          marginPagesDisplayed={50}
-          pageRangeDisplayed={10}
-          onPageChange={(e) => handlePageClick(e)}
-          containerClassName={'pagination'}
-          activeClassName={'page-item active'}
-          pageLinkClassName={'page-link'}
-          previousClassName={'page-link'}
-          nextClassName={'page-link'}
+          marginPagesDisplayed={2}
+          pageRangeDisplayed={5}
+          onPageChange={handlePageClick}
+          containerClassName={"pagination"}
+          activeClassName={"page-item active"}
+          pageLinkClassName={"page-link"}
+          previousClassName={"page-link"}
+          nextClassName={"page-link"}
         />
       </Row>
     </>

@@ -143,6 +143,7 @@ const userSlice = createSlice({
     listUsers: {
       loading: false,
       error: null,
+      users: [],
     },
     deleteUser: {
       loading: false,
@@ -152,7 +153,6 @@ const userSlice = createSlice({
       loading: false,
       error: null,
     },
-    users: [],
     loading: false,
     error: null,
   },
@@ -203,7 +203,7 @@ const userSlice = createSlice({
         state.userInfo = action.payload;
       })
       .addCase(listUsers.fulfilled, (state, action) => {
-        state.users = action.payload;
+        state.listUsers.users = action.payload;
       })
       .addCase(deleteUser.fulfilled, (state) => {
         state.deleteUser.loading = false;
