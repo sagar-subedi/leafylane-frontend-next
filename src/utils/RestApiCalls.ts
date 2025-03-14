@@ -6,6 +6,20 @@ import { USER_LOGOUT } from '@/constants/userConstants';
 import { getFromLocalStorage } from './LocalStorageUtils';
 // import store from '@/store/store1';
 
+//this interceptor is used to append the ngrok header to every request so that client need not see the ngrok warning
+axios.interceptors.request.use(
+  (config) => {
+    // Append the ngrok header to every request
+    config.headers["ngrok-skip-browser-warning"] = "true";
+    
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
