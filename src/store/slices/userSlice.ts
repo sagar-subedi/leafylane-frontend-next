@@ -18,7 +18,7 @@ import { getFromLocalStorage } from "@/utils/LocalStorageUtils";
 
 const userInfoFromStorage = typeof window !== 'undefined' && getFromLocalStorage('userInfo') 
 ? JSON.parse(getFromLocalStorage('userInfo')!) 
-  : {userName:null};
+  : null;
 
 export const login = createAsyncThunk(
   "user/login",

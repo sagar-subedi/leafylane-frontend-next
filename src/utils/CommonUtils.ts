@@ -16,12 +16,11 @@ export const getErrorMessage = (error) => {
 };
 
 export const isAdmin = () => {
-  // return true;
   const userInfoLocalStorage = getFromLocalStorage('userInfo');
   if (userInfoLocalStorage) {
     const token = JSON.parse(userInfoLocalStorage).token;
     const decodedToken = jwtDecode(token);
-    return decodedToken?.authorities?.includes('ROLE_ADMIN');
+    return decodedToken?.roles?.includes('ROLE_ADMIN');
   }
   return false;
 };

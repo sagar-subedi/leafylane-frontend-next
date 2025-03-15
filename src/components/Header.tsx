@@ -12,11 +12,7 @@ const Header = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const { userInfo } = user;
-  console.log("user info", userInfo)
 
-  // let userInfo = {
-  //   userName : "sagarrr"
-  // }
 
   const logoutHandler = () => {
     dispatch(logout());
