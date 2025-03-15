@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { USER_LOGIN_SUCCESS } from "@/constants/userConstants";
 import { getUserInfoApi } from "@/utils/RestApiCalls";
 
-const TOKEN_URL = "http://127.0.0.1:9080/oauth2/token";
+const TOKEN_URL = "http://167.86.105.91:9080/oauth2/token";
 const CLIENT_SECRET = "relive-client"; // ⚠️ Don't expose this in frontend! Use a backend proxy instead.
 
 const Callback = () => {
