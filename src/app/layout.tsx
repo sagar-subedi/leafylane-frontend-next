@@ -1,13 +1,12 @@
-"use client";
+"use client"
 import 'bootstrap/dist/css/bootstrap.min.css'; 
+import "@/styles/App.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import "@/styles/App.css";
 import { ReactNode } from "react";
 import { Provider } from "react-redux";
 import store from "@/store/store"; // Ensure correct path
 import { Suspense } from 'react';
-// import store from "@/store/store";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
