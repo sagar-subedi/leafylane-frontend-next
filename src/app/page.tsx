@@ -30,8 +30,6 @@
 
 
 
-
-import { Suspense } from 'react';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Product from '@/components/Product';
@@ -40,11 +38,15 @@ import { Col, Row } from 'react-bootstrap';
 import FullPageLoader from '@/components/FullPageLoader';
 import ReactPaginate from 'react-paginate';
 import { listProducts } from '@/store/slices/productSlice';
+import { setupAxiosInterceptors } from '../utils/refreshTokenInterceptor';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const productList = useSelector((state) => state.product);
   const { loading, error, products, pageResponse } = productList;
+
+
+setupAxiosInterceptors();
 
   useEffect(() => {
     dispatch(listProducts(0));
@@ -59,7 +61,7 @@ const HomeScreen = () => {
     <>
      <h1>Latest Products</h1>
       {error ? (
-        <Message variant='danger'></Message>
+        <Message variant='danger'>Something wrong happened</Message>
       ) : (
         <>
           <Row>
