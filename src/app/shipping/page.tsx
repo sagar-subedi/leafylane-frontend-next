@@ -44,7 +44,7 @@ const ShippingScreen = () => {
       setBillingAddressId(addresses[0].addressId);
       setShippingAddressId(addresses[0].addressId);
     }
-  }, [addresses, getShippingAddress,dispatch]);
+  }, [dispatch]);
 
 
 
@@ -66,7 +66,8 @@ const ShippingScreen = () => {
     setPostalCode('');
     setCountry(0);
     setPhone('');
-    dispatch(saveAddress(addressRequestBody));
+    await dispatch(saveAddress(addressRequestBody));
+    dispatch(getShippingAddress())
   };
 
   const proceedToPayment = () => {

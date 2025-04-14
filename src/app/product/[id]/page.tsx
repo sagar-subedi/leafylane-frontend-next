@@ -237,6 +237,7 @@ import Message from "@/components/Message";
 import Rating from "@/components/Rating";
 import { getImageApi, getProductDetailApi } from "@/utils/RestApiCalls";
 import { createProductReview, listProductReviews } from "@/store/slices/productSlice";
+import { addToCart } from "@/store/slices/cartSlice";
 
 const ProductScreen = () => {
   const { id } = useParams(); // ✅ Get dynamic product ID
@@ -284,8 +285,9 @@ const ProductScreen = () => {
   }, [dispatch, id]);
 
   // ✅ Handle "Add to Cart"
-  const addToCartHandler = () => {
-    router.push(`/cart/${id}?qty=${qty}`);
+  const addToCartHandler = async () => {
+    await dispatch(addToCart({ productId: id, quantity: qty }));
+    router.push("/cart");
   };
 
   // ✅ Handle "Submit Review"
@@ -307,7 +309,7 @@ const ProductScreen = () => {
       </Link>
 
       {error ? (
-        <Message variant="danger"></Message>
+        <Message variant="danger">An Error Occured</Message>
       ) : product ? (
         <>
           <Row>

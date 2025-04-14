@@ -6,7 +6,7 @@ import { USER_LOGIN_SUCCESS } from "@/constants/userConstants";
 import { getUserInfoApi } from "@/utils/RestApiCalls";
 
 const TOKEN_URL = "https://oauth2-auth-server.sagar88.com.np/oauth2/token";
-const CLIENT_SECRET = "relive-client"; // ⚠️ Don't expose this in frontend! Use a backend proxy instead.
+const CLIENT_SECRET = "leafylane-client"; // ⚠️ Don't expose this in frontend! Use a backend proxy instead.
 
 const Callback = () => {
   const dispatch = useDispatch();
@@ -27,8 +27,9 @@ const Callback = () => {
           grant_type: "authorization_code",
           code,
           redirect_uri: "https://leafylane-frontend-next.vercel.app/callback",
-          client_id: "relive-client",
+          client_id: "leafylane-client",
           client_secret: CLIENT_SECRET, // ⚠️ Better to use a backend proxy instead of exposing this
+          scope: "offline_access"
         }),
         {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -37,16 +38,16 @@ const Callback = () => {
 
       const { access_token, refresh_token } = response.data;
       const userInfo = {
-        token: access_token
+        token: access_token,
+        refresh_token
       };
       localStorage.setItem('userInfo', JSON.stringify(userInfo));
   
       //Get UserInfo
       const userInfoResponse = await getUserInfoApi();
       userInfoResponse.token = access_token;
-      // userInfoResponse.refresh_token = loginResponse.refresh_token;
-      userInfoResponse.refresh_token = "loginResponse.refresh_token";
-  
+      userInfoResponse.refresh_token = refresh_token;
+   
       dispatch({
         type: USER_LOGIN_SUCCESS,
         payload: userInfoResponse

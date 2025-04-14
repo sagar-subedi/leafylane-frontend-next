@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -11,7 +11,12 @@ const Header = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const { userInfo } = user;
+  const [userInfo, setUserInfo] = useState(null); // Local state for userInfo
+
+  useEffect(() => {
+    // Set userInfo after the component has mounted
+    setUserInfo(user.userInfo);
+  }, [user.userInfo]);
 
 
   const logoutHandler = () => {
@@ -37,35 +42,31 @@ const Header = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="navbar-nav ml-auto">
-              <Link href="/cart" passHref legacyBehavior>
-                <Nav.Link>
-                  <i className="p-1 fas fa-shopping-cart"></i>Cart
-                </Nav.Link>
+              <Link href="/cart" className="nav-link">
+                <i className="p-1 fas fa-shopping-cart"></i>Cart
               </Link>
               {userInfo ? (
                 <NavDropdown title={userInfo.userName} id="username">
-                  <Link href="/userProfile" passHref legacyBehavior>
-                    <NavDropdown.Item>Profile</NavDropdown.Item>
+                  <Link href="/userProfile" className="dropdown-item">
+                    Profile
                   </Link>
                   <NavDropdown.Item onClick={logoutHandler}>Logout</NavDropdown.Item>
                 </NavDropdown>
               ) : (
-                <Link href="/login" passHref legacyBehavior>
-                  <Nav.Link>
-                    <i className="p-1 fas fa-user"></i>Sign In
-                  </Nav.Link>
+                <Link href="/login" className="nav-link">
+                  <i className="p-1 fas fa-user"></i>Sign In
                 </Link>
               )}
               {userInfo && isAdmin() && (
                 <NavDropdown title="Admin" id="adminmenu">
-                  <Link href="/admin/userlist" passHref legacyBehavior>
-                    <NavDropdown.Item>Users</NavDropdown.Item>
+                  <Link href="/admin/userlist" className="dropdown-item">
+                    Users
                   </Link>
-                  <Link href="/admin/productlist" passHref legacyBehavior>
-                    <NavDropdown.Item>Products</NavDropdown.Item>
+                  <Link href="/admin/productlist" className="dropdown-item">
+                    Products
                   </Link>
-                  <Link href="/admin/orderlist" passHref legacyBehavior>
-                    <NavDropdown.Item>Orders</NavDropdown.Item>
+                  <Link href="/admin/orderlist" className="dropdown-item">
+                    Orders
                   </Link>
                 </NavDropdown>
               )}

@@ -33,9 +33,9 @@ const LoginScreen = () => {
   };
 
   const AUTH_URL = "http://167.86.105.91:9080/oauth2/authorize";
-  const CLIENT_ID = "relive-client";
-  const REDIRECT_URI = "https://leafylane-frontend-next.vercel.app/callback"; // Change to match frontend
-  const SCOPE = "message.read";
+  const CLIENT_ID = "leafylane-client";
+  const REDIRECT_URI = "http://localhost:3000/callback"; // Change to match frontend
+  const SCOPE = "store.shop offline_access";
   const STATE = "dJMLwhM2coXgXTiQ5m4ooL66Bo1z94tqwlcYGTFiiu8=";
 
   const loginWithOAuth = () => {

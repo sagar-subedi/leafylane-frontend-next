@@ -116,8 +116,6 @@ import { getCartDetails, addToCart } from "@/store/slices/cartSlice";
 
 const CartScreen = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const qty = Number(searchParams.get("qty")) || 1;
   const { id: productId } = useParams();
 
   const dispatch = useDispatch();
@@ -131,15 +129,11 @@ const CartScreen = () => {
         return;
       }
 
-      if (productId) {
-        await dispatch(addToCart({ productId, quantity: qty }));
-      } else {
-        await dispatch(getCartDetails());
-      }
+      await dispatch(getCartDetails());
     };
 
     fetchCartDetails();
-  }, [dispatch, productId, qty, userInfo, router]);
+  }, [dispatch, userInfo, router]);
 
   const checkoutHandler = () => {
     router.push("/login?redirect=shipping");

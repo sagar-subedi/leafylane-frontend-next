@@ -6,7 +6,7 @@ import Link from "next/link";
 import { getProductDetailApi } from "@/utils/RestApiCalls";
 import Message from "@/components/Message";
 import { getErrorMessage } from "@/utils/CommonUtils";
-import { removeFromCart } from "@/store/slices/cartSlice";
+import { getCartDetails, removeFromCart } from "@/store/slices/cartSlice";
 
 const CartItem = ({ item, addToCart }) => {
   const [product, setProduct] = useState(null);
@@ -29,8 +29,14 @@ const CartItem = ({ item, addToCart }) => {
     fetchProductDetails();
   }, [item]);
 
-  const removeFromCartHandler = (cartItemId) => {
-    dispatch(removeFromCart(cartItemId));
+  const removeFromCartHandler = async (cartItemId) => {
+    //There may definitely a better way to do this
+    // the second dispatch will make an api call to get the cart details
+    // but probably we can update state and remove that specific cart item
+    // from state directly, after the api call, to remove item from the cart
+  // to obtain the lastest cart details
+    await dispatch(removeFromCart(cartItemId));
+    dispatch(getCartDetails());
   };
 
   return (
@@ -74,7 +80,7 @@ const CartItem = ({ item, addToCart }) => {
             </Col>
             <Col md={2} className="pt-3 pl-5">
               <Button type="button" variant="light" onClick={() => removeFromCartHandler(item.cartItemId)}>
-                <i className="fas fa-trash"></i>
+                <i className="fas fa-trash">Delete</i>
               </Button>
             </Col>
           </Row>

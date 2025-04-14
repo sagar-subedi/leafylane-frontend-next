@@ -41,11 +41,12 @@ const PaymentScreen = () => {
     router.push("/placeorder"); // ✅ Use Next.js router
   };
 
-  const saveCard = () => {
+  const saveCard =  async () => {
     const cardRequestBody = {
       card: { cardNumber, expirationMonth, expirationYear, cvv },
     };
-    dispatch(savePaymentMethod(cardRequestBody));
+    await dispatch(savePaymentMethod(cardRequestBody));
+    dispatch(fetchPaymentMethods());
   };
 
   return (
