@@ -161,6 +161,7 @@ const userSlice = createSlice({
     logout: (state) => {
       localStorage.clear();
       state.userInfo = null;
+      window.location.href = '/login';
     },
   },
   extraReducers: (builder) => {
