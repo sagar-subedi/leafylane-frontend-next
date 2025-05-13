@@ -26,10 +26,11 @@ const Callback = () => {
         new URLSearchParams({
           grant_type: "authorization_code",
           code,
-          redirect_uri: "https://leafylane-frontend-next.vercel.app/callback",
+          // redirect_uri: "http://localhost:3000/callback",
+          redirect_uri: "https://leafylane.sagar88.com.np/callback", // Change to match frontend
           client_id: "leafylane-client",
           client_secret: CLIENT_SECRET, // ⚠️ Better to use a backend proxy instead of exposing this
-          scope: "offline_access"
+          scope: "store.shop offline_access"
         }),
         {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
