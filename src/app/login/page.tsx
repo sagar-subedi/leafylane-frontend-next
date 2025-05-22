@@ -44,8 +44,8 @@ const LoginScreen = () => {
     dispatch(login({ userNameOrEmail, password }));
   };
 
-  const AUTH_URL = "http://167.86.105.91:9080/api/auth/authorize";
-  const LOGIN_URL = "http://167.86.105.91:9080/api/auth/login"
+  const AUTH_URL = "https://oauth2-auth-server.sagar88.com.np/api/auth/authorize";
+  const LOGIN_URL = "https://oauth2-auth-server.sagar88.com.np/api/auth/login"
   const CLIENT_ID = "leafylane-client";
   const REDIRECT_URI = "https://leafylane.sagar88.com.np/callback"; // Change to match frontend
   const SCOPE = "store.shop offline_access";
