@@ -85,7 +85,7 @@ const LoginScreen = () => {
 
   async function exchangeAuthorizationCode(authorizationCode: any, codeVerifier: any) {
     try {
-      const response = await fetch("http://67.86.105.91:9080/oauth2/token", {
+      const response = await fetch("https://oauth2-auth-server.sagar88.com.np/oauth2/token", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
