@@ -11,6 +11,7 @@ import {
 } from "@/utils/RestApiCalls";
 import { getErrorMessage } from "@/utils/CommonUtils";
 import { getFromLocalStorage } from "@/utils/LocalStorageUtils";
+import { toast } from "react-toastify";
 
 // const userInfoFromStorage = typeof window !== 'undefined' && getFromLocalStorage('userInfo') 
 // ? JSON.parse(getFromLocalStorage('userInfo')!) 
@@ -25,7 +26,7 @@ export const login = createAsyncThunk(
   async ({ usernameOrEmail, password }, { rejectWithValue }) => {
     try {
       const loginResponse = await postLoginApi({
-        grant_type: "password",
+        grant_type: "authorization_code",
         username: usernameOrEmail,
         password,
       });
@@ -45,14 +46,20 @@ export const register = createAsyncThunk(
   async ({ userName, firstName, email, password }, { rejectWithValue }) => {
     try {
       await postSignupApi({
-        grant_type: "password",
+        grant_type: "authorization_code",
         userName,
         password,
         firstName,
         email,
       });
-      return await login({ usernameOrEmail: userName, password });
-    } catch (error) {
+    // Dispatch the login action after successful registration
+    toast.success('Successful Registration. You can now log in with your credentials.');
+    setTimeout(() => {
+      window.location.href = '/login';
+    }, 3000);
+    // await dispatch(login({ usernameOrEmail: userName, password }));
+    
+  } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }
   }
@@ -183,8 +190,7 @@ const userSlice = createSlice({
         state.register.error = null;
       })
       .addCase(register.fulfilled, (state, action) => {
-        state.register.loading = false;
-        state.userInfo = action.payload;
+        state.register.loading = false; 
       })
       .addCase(register.rejected, (state, action) => {
         state.register.loading = false;
