@@ -40,7 +40,7 @@ const RegisterScreen = (props) => {
       setMessage('Passwords do not match');
       dispatch({ type: USER_REGISTER_RESET });
     } else {
-      dispatch(register(userName, firstName, email, password));
+      dispatch(register({userName, firstName, email, password}));
     }
   };
 
