@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import { Button, Card, Col, ListGroup, Row } from "react-bootstrap";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  Divider,
+  Typography,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { placeOrderAction, previewOrderAction } from "@/store/slices/orderSlice";
@@ -60,95 +68,112 @@ const PlaceOrderScreen = () => {
   };
 
   return (
-    <>
+    <Box className="max-w-6xl mx-auto px-4 py-8">
+      {/* Checkout Steps */}
       <CheckoutSteps step1 step2 step3 step4 />
+
       {previewOrderLoading ? (
         <Loader />
       ) : (
-        <Row>
-          <Col md={8}>
-            <ListGroup variant="flush">
-              <ListGroup.Item>
-                <h2>Shipping</h2>
-                <p>
-                  <strong>Address:</strong>{" "}
-                  {previewOrderResponse?.shippingAddress?.addressLine1},{" "}
+        <Box className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Order Details */}
+          <Box className="col-span-2">
+            <Card className="shadow-md">
+              <CardContent>
+                <Typography variant="h5" className="font-bold text-gray-800 mb-4">
+                  Shipping
+                </Typography>
+                <Typography variant="body1" className="text-gray-600 mb-4">
+                  <strong>Address:</strong> {previewOrderResponse?.shippingAddress?.addressLine1},{" "}
                   {previewOrderResponse?.shippingAddress?.city}{" "}
                   {previewOrderResponse?.shippingAddress?.postalCode},{" "}
                   {previewOrderResponse?.shippingAddress?.country}
-                </p>
-              </ListGroup.Item>
+                </Typography>
 
-              <ListGroup.Item>
-                <h2>Payment Method</h2>
-                <strong>Method: </strong>
-                {previewOrderResponse?.card?.cardBrand?.toUpperCase()} - **** **** ****{" "}
-                {previewOrderResponse?.card?.last4Digits}
-              </ListGroup.Item>
+                <Divider className="my-4" />
 
-              <ListGroup.Item>
-                <h2>Order Items</h2>
+                <Typography variant="h5" className="font-bold text-gray-800 mb-4">
+                  Payment Method
+                </Typography>
+                <Typography variant="body1" className="text-gray-600 mb-4">
+                  <strong>Method:</strong> {previewOrderResponse?.card?.cardBrand?.toUpperCase()} - **** **** ****{" "}
+                  {previewOrderResponse?.card?.last4Digits}
+                </Typography>
+
+                <Divider className="my-4" />
+
+                <Typography variant="h5" className="font-bold text-gray-800 mb-4">
+                  Order Items
+                </Typography>
                 {!previewOrderResponse?.orderItems?.length ? (
                   <Message>Your cart is empty</Message>
                 ) : (
-                  <ListGroup variant="flush">
+                  <Box className="space-y-4">
                     {previewOrderResponse?.orderItems?.map((item, index) => (
-                      <ListGroup.Item key={index}>
-                        <OrderItem item={item} />
-                      </ListGroup.Item>
+                      <OrderItem key={index} item={item} />
                     ))}
-                  </ListGroup>
+                  </Box>
                 )}
-              </ListGroup.Item>
-            </ListGroup>
-          </Col>
-          <Col md={4}>
-            <Card>
-              <ListGroup variant="flush">
-                <ListGroup.Item>
-                  <h2>Order Summary</h2>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Row>
-                    <Col>Items</Col>
-                    <Col>${previewOrderResponse?.itemsTotalPrice}</Col>
-                  </Row>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Row>
-                    <Col>Shipping</Col>
-                    <Col>${previewOrderResponse?.shippingPrice}</Col>
-                  </Row>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Row>
-                    <Col>Tax</Col>
-                    <Col>${previewOrderResponse?.taxPrice}</Col>
-                  </Row>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Row>
-                    <Col>Total</Col>
-                    <Col>${previewOrderResponse?.totalPrice}</Col>
-                  </Row>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Button
-                    type="button"
-                    className="btn-block"
-                    disabled={!previewOrderResponse?.orderItems?.length}
-                    onClick={placeOrderHandler}
-                  >
-                    Place Order
-                  </Button>
-                </ListGroup.Item>
-              </ListGroup>
+              </CardContent>
             </Card>
-          </Col>
-        </Row>
+          </Box>
+
+          {/* Order Summary */}
+          <Box>
+            <Card className="shadow-md">
+              <CardContent>
+                <Typography variant="h5" className="font-bold text-gray-800 mb-4">
+                  Order Summary
+                </Typography>
+                <Divider className="mb-4" />
+                <Box className="flex justify-between mb-4">
+                  <Typography variant="body1" className="text-gray-600">
+                    Items
+                  </Typography>
+                  <Typography variant="body1" className="font-bold text-gray-800">
+                    ${previewOrderResponse?.itemsTotalPrice}
+                  </Typography>
+                </Box>
+                <Box className="flex justify-between mb-4">
+                  <Typography variant="body1" className="text-gray-600">
+                    Shipping
+                  </Typography>
+                  <Typography variant="body1" className="font-bold text-gray-800">
+                    ${previewOrderResponse?.shippingPrice}
+                  </Typography>
+                </Box>
+                <Box className="flex justify-between mb-4">
+                  <Typography variant="body1" className="text-gray-600">
+                    Tax
+                  </Typography>
+                  <Typography variant="body1" className="font-bold text-gray-800">
+                    ${previewOrderResponse?.taxPrice}
+                  </Typography>
+                </Box>
+                <Box className="flex justify-between mb-4">
+                  <Typography variant="body1" className="text-gray-600">
+                    Total
+                  </Typography>
+                  <Typography variant="body1" className="font-bold text-gray-800">
+                    ${previewOrderResponse?.totalPrice}
+                  </Typography>
+                </Box>
+                <Button
+                  variant="contained"
+                  color="success"
+                  fullWidth
+                  disabled={!previewOrderResponse?.orderItems?.length}
+                  onClick={placeOrderHandler}
+                >
+                  Place Order
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+        </Box>
       )}
       {placeOrderLoading && <FullPageLoader />}
-    </>
+    </Box>
   );
 };
 

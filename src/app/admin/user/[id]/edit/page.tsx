@@ -1,40 +1,48 @@
-"use client"
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
-import { Form, Button } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import Message from '@/components/Message';
-import Loader from '@/components/Loader';
-import FormContainer from '@/components/FormContainer';
-import { getUserDetails, updateUser } from '@/store/slices/userSlice';
-import { USER_UPDATE_RESET } from '@/constants/userConstants';
-import { getAllRolesApi } from '@/utils/RestApiCalls';
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import {
+  Box,
+  Button,
+  Checkbox,
+  CircularProgress,
+  FormControlLabel,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import Message from "@/components/Message";
+import Loader from "@/components/Loader";
+import { getUserDetails, updateUser } from "@/store/slices/userSlice";
+import { USER_UPDATE_RESET } from "@/constants/userConstants";
+import { getAllRolesApi } from "@/utils/RestApiCalls";
 
 const UserEditScreen = () => {
-  const userId = useParams();
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [roles, setRoles] = useState([]);
-
+  const { id: userId } = useParams();
+  const router = useRouter();
   const dispatch = useDispatch();
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [roles, setRoles] = useState([]);
+  const [checkedItems, setCheckedItems] = useState(new Map());
+
   const userDetails = useSelector((state) => state.user);
   const { loading, error, userInfo } = userDetails;
 
   const userUpdate = useSelector((state) => state.user.updateUserProfile);
   const { loading: loadingUpdate, error: errorUpdate, success: successUpdate } = userUpdate;
 
-  const [checkedItems, setCheckedItems] = useState(new Map());
-  const router = useRouter();
-
   useEffect(() => {
     const fetchData = async () => {
       if (successUpdate) {
         dispatch({ type: USER_UPDATE_RESET });
-        router.push('/admin/userlist');
+        router.push("/admin/userlist");
       } else {
-        if (!userInfo.userName || userInfo.userId !== userId) {
+        if (!userInfo?.userName || userInfo?.userId !== userId) {
           dispatch(getUserDetails(userId));
         } else {
           setFirstName(userInfo.firstName);
@@ -61,85 +69,101 @@ const UserEditScreen = () => {
   const submitHandler = (e) => {
     e.preventDefault();
 
-    const roles = Array.from(checkedItems)
+    console.log("The user id is " + userId)
+    const selectedRoles = Array.from(checkedItems)
       .filter((item) => item[1] === true)
-      .map((i) => {
-        return i[0];
-      });
+      .map((i) => i[0]);
 
-    dispatch(
-      updateUser(userId, {
+      const userUpdateRequestBody = {
         firstName,
         lastName,
         email,
-        roles
-      })
+        roles: selectedRoles,
+      };
+    dispatch(
+      updateUser(userId, userUpdateRequestBody)
     );
   };
 
   return (
-    <>
-      <Link href='/admin/userlist' className='btn btn-dark my-3'>
+    <Box className="max-w-4xl mx-auto px-4 py-8">
+      <Link href="/admin/userlist" className="text-blue-600 hover:underline mb-6 inline-block">
         Go Back
       </Link>
-      <FormContainer>
-        <h1>Edit User</h1>
-        {loadingUpdate && <Loader />}
-        {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
-        {loading ? (
-          <Loader />
-        ) : error ? (
-          <Message variant='danger'>{error}</Message>
-        ) : (
-          <Form onSubmit={submitHandler}>
-            <Form.Group controlId='firstName'>
-              <Form.Label>First Name</Form.Label>
-              <Form.Control
-                type='name'
-                placeholder='Enter first name'
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+      <Typography variant="h4" className="font-bold text-gray-800 mb-6">
+        Edit User
+      </Typography>
 
-            <Form.Group controlId='lastName'>
-              <Form.Label>Last Name</Form.Label>
-              <Form.Control
-                type='name'
-                placeholder='Enter last name'
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+      {loadingUpdate && <Loader />}
+      {errorUpdate && <Message variant="danger">{errorUpdate}</Message>}
+      {loading ? (
+        <Loader />
+      ) : error ? (
+        <Message variant="danger">{error}</Message>
+      ) : (
+        <form onSubmit={submitHandler}>
+          <Box className="mb-4">
+            <TextField
+              label="First Name"
+              variant="outlined"
+              fullWidth
+              required
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+          </Box>
+          <Box className="mb-4">
+            <TextField
+              label="Last Name"
+              variant="outlined"
+              fullWidth
+              required
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </Box>
+          <Box className="mb-4">
+            <TextField
+              label="Email Address"
+              type="email"
+              variant="outlined"
+              fullWidth
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Box>
 
-            <Form.Group controlId='email'>
-              <Form.Label>Email Address</Form.Label>
-              <Form.Control type='email' placeholder='Enter email' value={email} onChange={(e) => setEmail(e.target.value)}></Form.Control>
-            </Form.Group>
+          {/* Roles */}
+          {roles.length > 0 &&
+            roles.map((role) => (
+              <Box key={role.roleName} className="mb-2">
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={!!checkedItems.get(role.roleName)}
+                      name={role.roleName}
+                      onChange={handleChange}
+                    />
+                  }
+                  label={`ROLE: ${role.roleName}`}
+                />
+              </Box>
+            ))}
 
-            {roles.length > 0 &&
-              roles.map((role) => (
-                <div key={role.roleName}>
-                  <Form.Check
-                    key={role.roleName}
-                    inline
-                    label={`ROLE : ${role.roleName}`}
-                    type='checkbox'
-                    id={role.roleName}
-                    checked={!!checkedItems.get(`${role.roleName}`)}
-                    name={role.roleName}
-                    onChange={handleChange}
-                  />
-                </div>
-              ))}
-
-            <Button className='mt-3' type='submit' variant='primary'>
-              Update
-            </Button>
-          </Form>
-        )}
-      </FormContainer>
-    </>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            disabled={loadingUpdate}
+            className="mt-4"
+          >
+            {loadingUpdate ? <CircularProgress size={24} /> : "Update"}
+          </Button>
+        </form>
+      )}
+    </Box>
   );
 };
 

@@ -7,6 +7,8 @@ import { getProductDetailApi } from "@/utils/RestApiCalls";
 import Message from "@/components/Message";
 import { getErrorMessage } from "@/utils/CommonUtils";
 import { getCartDetails, removeFromCart } from "@/store/slices/cartSlice";
+import { Box, IconButton, MenuItem, Select, Typography } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const CartItem = ({ item, addToCart }) => {
   const [product, setProduct] = useState(null);
@@ -44,47 +46,65 @@ const CartItem = ({ item, addToCart }) => {
       {error ? (
         <Message variant="danger">{JSON.stringify(error)}</Message>
       ) : (
-        <ListGroup.Item key={item.productId}>
-          <Row>
-            <Col md={2}>
-              <Image
-                src={`${BACKEND_API_GATEWAY_URL}/api/catalog/image/${product?.imageId}`}
-                alt={item.productName}
-                fluid
-                rounded
-              />
-            </Col>
-            <Col md={3} className="pt-4">
-              <Link href={`/product/${item.productId}`}>{item.productName}</Link>
-            </Col>
-            <Col md={2} className="pt-4">
+        <Box
+          key={item.productId}
+          className="flex items-center justify-between border-b pb-4 mb-4"
+        >
+          {/* Thumbnail */}
+          <img
+            src={`${BACKEND_API_GATEWAY_URL}/api/catalog/image/${product?.imageId}`}
+            alt={item.productName}
+            className="w-16 h-16 object-cover rounded-md"
+          />
+
+          {/* Product Name */}
+          <Box className="flex-1 ml-4">
+            <Link href={`/product/${item.productId}`} passHref>
+              <Typography
+                variant="body1"
+                className="font-bold text-gray-800 hover:text-blue-600 transition-colors cursor-pointer"
+              >
+                {item.productName}
+              </Typography>
+            </Link>
+            <Typography variant="body2" className="text-gray-600">
               ${item.itemPrice}
-            </Col>
-            <Col md={2} className="pt-3">
-              {product && (
-                <Form.Control
-                  as="select"
-                  value={item.quantity}
-                  onChange={(e) => addToCart(item.productId, e.target.value)}
-                >
-                  {[...Array(Math.min(product.availableItemCount, 10)).keys()].map((x) => (
-                    <option key={x + 1} value={x + 1}>
+            </Typography>
+          </Box>
+
+          {/* Quantity Selector */}
+          <Box className="flex items-center">
+            {product && (
+              <Select
+                value={item.quantity}
+                onChange={(e) => addToCart(item.productId, e.target.value)}
+                className="w-20"
+                size="small"
+              >
+                {[...Array(Math.min(product.availableItemCount, 10)).keys()].map(
+                  (x) => (
+                    <MenuItem key={x + 1} value={x + 1}>
                       {x + 1}
-                    </option>
-                  ))}
-                </Form.Control>
-              )}
-            </Col>
-            <Col md={1} className="pt-4">
-              ${item.extendedPrice}
-            </Col>
-            <Col md={2} className="pt-3 pl-5">
-              <Button type="button" variant="light" onClick={() => removeFromCartHandler(item.cartItemId)}>
-                <i className="fas fa-trash">Delete</i>
-              </Button>
-            </Col>
-          </Row>
-        </ListGroup.Item>
+                    </MenuItem>
+                  )
+                )}
+              </Select>
+            )}
+          </Box>
+
+          {/* Total Price */}
+          <Typography variant="body1" className="font-bold text-gray-800">
+            ${item.extendedPrice}
+          </Typography>
+
+          {/* Remove Button */}
+          <IconButton
+            color="error"
+            onClick={() => removeFromCartHandler(item.cartItemId)}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Box>
       )}
     </>
   );

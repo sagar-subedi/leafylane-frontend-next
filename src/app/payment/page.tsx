@@ -1,8 +1,24 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
-import { Button, Col, Form, InputGroup, ListGroup, Row, Spinner } from "react-bootstrap";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from "next/navigation"; // ✅ Replace history with useRouter
+import { useRouter } from "next/navigation";
 import { savePaymentMethodId } from "@/store/slices/orderSlice";
 import { fetchPaymentMethods, savePaymentMethod } from "@/store/slices/paymentSlice";
 import CheckoutSteps from "@/components/CheckoutSteps";
@@ -10,7 +26,7 @@ import Loader from "@/components/Loader";
 import Message from "@/components/Message";
 
 const PaymentScreen = () => {
-  const router = useRouter(); // ✅ Next.js Router
+  const router = useRouter();
   const dispatch = useDispatch();
 
   const order = useSelector((state) => state.order);
@@ -18,12 +34,12 @@ const PaymentScreen = () => {
 
   useEffect(() => {
     if (!shippingAddressId) {
-      router.push("/shipping"); // ✅ Redirect properly
+      router.push("/shipping");
     }
   }, [shippingAddressId, router]);
 
   const [paymentMethodId, setPaymentMethodId] = useState("");
-  const [cardNumber, setCardNumber] = useState("4242424242424242"); // ✅ Removed spaces
+  const [cardNumber, setCardNumber] = useState("4242424242424242");
   const [expirationMonth, setExpirationMonth] = useState("10");
   const [expirationYear, setExpirationYear] = useState("26");
   const [cvv, setCvv] = useState("123");
@@ -38,10 +54,10 @@ const PaymentScreen = () => {
 
   const proceedToPlaceOrder = () => {
     dispatch(savePaymentMethodId(paymentMethodId));
-    router.push("/placeorder"); // ✅ Use Next.js router
+    router.push("/placeorder");
   };
 
-  const saveCard =  async () => {
+  const saveCard = async () => {
     const cardRequestBody = {
       card: { cardNumber, expirationMonth, expirationYear, cvv },
     };
@@ -50,93 +66,124 @@ const PaymentScreen = () => {
   };
 
   return (
-    <>
+    <Box className="max-w-4xl mx-auto px-4 py-8">
+      {/* Checkout Steps */}
       <CheckoutSteps step1 step2 step3 />
-      <Row className="mx-5 justify-content-md-center">
-        <h1 className="mx-5 justify-content-md-center">Payment Method</h1>
-      </Row>
-      <hr />
+
+      {/* Page Title */}
+      <Typography variant="h4" className="font-bold text-gray-800 mb-6 text-center">
+        Payment Method
+      </Typography>
+      <hr className="mb-6" />
+
+      {/* Error Messages */}
       {(saveError || listError) && <Message variant="danger">{saveError || listError}</Message>}
       {message && <Message variant="danger">{message}</Message>}
 
-      <Row>
-        <Col xs={12} md={6}>
+      <Box className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Select Payment Method */}
+        <Box>
           {listLoading ? (
             <Loader />
           ) : (
             <>
-              <h2>Select Payment Method</h2>
-              {paymentMethods.map((a) => (
-                <ListGroup.Item key={a.paymentMethodId} variant="flush">
-                  <InputGroup>
-                    <Col md={1}>
-                      <Form.Check
-                        type="radio"
-                        id={a.paymentMethodId}
-                        value={a.paymentMethodId} // ✅ Fix value
-                        name="paymentMethod"
-                        checked={a.paymentMethodId === paymentMethodId}
-                        onChange={() => setPaymentMethodId(a.paymentMethodId)}
+              <Typography variant="h5" className="font-bold text-gray-800 mb-4">
+                Select Payment Method
+              </Typography>
+              <RadioGroup value={paymentMethodId} onChange={(e) => setPaymentMethodId(e.target.value)}>
+                {paymentMethods.map((a) => (
+                  <Card key={a.paymentMethodId} className="mb-4 shadow-md">
+                    <CardContent>
+                      <FormControlLabel
+                        value={a.paymentMethodId}
+                        control={<Radio />}
+                        label={
+                          <Box>
+                            <Typography variant="body1" className="font-bold text-gray-800">
+                              {a.cardType}
+                            </Typography>
+                            <Typography variant="body2" className="text-gray-600">
+                              **** **** **** {a.cardLast4Digits} - {a.cardExpirationMonth}/{a.cardExpirationYear}
+                            </Typography>
+                          </Box>
+                        }
                       />
-                    </Col>
-                    <Col>
-                      <div
-                        className="p-2"
-                        style={{ whiteSpace: "pre-wrap", backgroundColor: "#eeeeee" }}
-                        onClick={() => setPaymentMethodId(a.paymentMethodId)}
-                      >
-                        <p className="m-0" style={{ textTransform: "uppercase" }}>
-                          {a.cardType}
-                        </p>
-                        <p className="m-0">
-                          **** **** **** {a.cardLast4Digits} - {a.cardExpirationMonth} / {a.cardExpirationYear}
-                        </p>
-                      </div>
-                    </Col>
-                  </InputGroup>
-                </ListGroup.Item>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))}
+              </RadioGroup>
             </>
           )}
-        </Col>
+        </Box>
 
-        <Col xs={12} md={6}>
-          <h2>Add New Card</h2>
-          <Form>
-            <Form.Group controlId="cardNumber">
-              <Form.Label>Card Number</Form.Label>
-              <Form.Control type="text" value={cardNumber} required onChange={(e) => setCardNumber(e.target.value)} />
-            </Form.Group>
-
-            <Form.Group controlId="expirationMonth">
-              <Form.Label>Expiration Month</Form.Label>
-              <Form.Control type="text" value={expirationMonth} required onChange={(e) => setExpirationMonth(e.target.value)} />
-            </Form.Group>
-
-            <Form.Group controlId="expirationYear">
-              <Form.Label>Expiration Year</Form.Label>
-              <Form.Control type="text" value={expirationYear} required onChange={(e) => setExpirationYear(e.target.value)} />
-            </Form.Group>
-
-            <Form.Group controlId="cvv">
-              <Form.Label>Cvv</Form.Label>
-              <Form.Control type="password" value={cvv} required onChange={(e) => setCvv(e.target.value)} />
-            </Form.Group>
-
-            <Button type="button" variant="primary" onClick={saveCard} disabled={saveLoading}>
-              {saveLoading ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : "Add Card"}
+        {/* Add New Card */}
+        <Box>
+          <Typography variant="h5" className="font-bold text-gray-800 mb-4">
+            Add New Card
+          </Typography>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <TextField
+              label="Card Number"
+              fullWidth
+              required
+              value={cardNumber}
+              onChange={(e) => setCardNumber(e.target.value)}
+              className="mb-4"
+            />
+            <Box className="grid grid-cols-2 gap-4">
+              <TextField
+                label="Expiration Month"
+                fullWidth
+                required
+                value={expirationMonth}
+                onChange={(e) => setExpirationMonth(e.target.value)}
+                className="mb-4"
+              />
+              <TextField
+                label="Expiration Year"
+                fullWidth
+                required
+                value={expirationYear}
+                onChange={(e) => setExpirationYear(e.target.value)}
+                className="mb-4"
+              />
+            </Box>
+            <TextField
+              label="CVV"
+              fullWidth
+              required
+              value={cvv}
+              onChange={(e) => setCvv(e.target.value)}
+              className="mb-4"
+            />
+            <Button
+              type="button"
+              variant="contained"
+              color="primary"
+              fullWidth
+              onClick={saveCard}
+              disabled={saveLoading}
+            >
+              {saveLoading ? <CircularProgress size={24} /> : "Add Card"}
             </Button>
-          </Form>
-        </Col>
-      </Row>
+          </form>
+        </Box>
+      </Box>
 
-      <hr />
-      <Row className="mx-5 justify-content-md-center">
-        <Button type="button" variant="primary" onClick={proceedToPlaceOrder} className="mt-3" disabled={!paymentMethodId}>
+      <hr className="my-6" />
+
+      {/* Proceed to Place Order */}
+      <Box className="text-center">
+        <Button
+          variant="contained"
+          color="success"
+          onClick={proceedToPlaceOrder}
+          disabled={!paymentMethodId}
+        >
           Proceed to Place Order
         </Button>
-      </Row>
-    </>
+      </Box>
+    </Box>
   );
 };
 

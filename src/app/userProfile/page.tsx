@@ -1,23 +1,37 @@
-"use client"
-import React, { useEffect, useState } from 'react';
-import { Button, Col, Form, Row, Table } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { listMyOrdersAction } from '@/store/slices/orderSlice';
-import { getUserDetails, updateUserProfile } from '@/store/slices/userSlice';
-import FullPageLoader from '@/components/FullPageLoader';
-import Message from '@/components/Message';
-import { USER_UPDATE_PROFILE_RESET } from '@/constants/userConstants';
+"use client";
+
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  TextField,
+  Typography,
+  Paper,
+} from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { listMyOrdersAction } from "@/store/slices/orderSlice";
+import { getUserDetails, updateUserProfile } from "@/store/slices/userSlice";
+import FullPageLoader from "@/components/FullPageLoader";
+import Message from "@/components/Message";
+import { USER_UPDATE_PROFILE_RESET } from "@/constants/userConstants";
 
 const ProfileScreen = () => {
   const router = useRouter();
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [message, setMessage] = useState('');
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [message, setMessage] = useState("");
 
   const dispatch = useDispatch();
 
@@ -35,7 +49,7 @@ const ProfileScreen = () => {
 
   useEffect(() => {
     // if (!userInfo) {
-    //   router.push('/login');
+    //   router.push("/login");
     // } else {
     //   if (!user || !user.userName) {
     //     dispatch({ type: USER_UPDATE_PROFILE_RESET });
@@ -53,128 +67,148 @@ const ProfileScreen = () => {
     e.preventDefault();
     setMessage(null);
     if (password !== confirmPassword) {
-      setMessage('Passwords do not match');
+      setMessage("Passwords do not match");
     } else {
       dispatch(updateUserProfile({ firstName, lastName, email, password }));
     }
   };
 
   return (
-    <Row>
-      <Col md={3}>
-        <h2>User Profile</h2>
-        {message && <Message variant='danger'>{message}</Message>}
-        {success && <Message variant='success'>Profile Updated</Message>}
-        {(errorUserDetails || errorUpdateUserDetails) && (
-          <Message variant='danger'>{errorUserDetails || errorUpdateUserDetails}</Message>
-        )}
-        <Form onSubmit={userProfileUpdateHandler}>
-          <Form.Group controlId='firstName' className='mb-3'>
-            <Form.Label>First Name</Form.Label>
-            <Form.Control
-              type='text'
-              placeholder='Enter First Name'
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-          </Form.Group>
+    <Box className="max-w-7xl mx-auto px-4 py-8">
+      <Box className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* User Profile Form */}
+        <Box>
+          <Typography variant="h5" className="font-bold text-gray-800 mb-6">
+            User Profile
+          </Typography>
+          {message && <Message variant="danger">{message}</Message>}
+          {success && <Message variant="success">Profile Updated</Message>}
+          {(errorUserDetails || errorUpdateUserDetails) && (
+            <Message variant="danger">{errorUserDetails || errorUpdateUserDetails}</Message>
+          )}
+          <form onSubmit={userProfileUpdateHandler}>
+            <Box className="mb-4">
+              <TextField
+                label="First Name"
+                variant="outlined"
+                fullWidth
+                required
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+            </Box>
+            <Box className="mb-4">
+              <TextField
+                label="Last Name"
+                variant="outlined"
+                fullWidth
+                required
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+            </Box>
+            <Box className="mb-4">
+              <TextField
+                label="Email Address"
+                type="email"
+                variant="outlined"
+                fullWidth
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </Box>
+            <Box className="mb-4">
+              <TextField
+                label="Password"
+                type="password"
+                variant="outlined"
+                fullWidth
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </Box>
+            <Box className="mb-6">
+              <TextField
+                label="Confirm Password"
+                type="password"
+                variant="outlined"
+                fullWidth
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </Box>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              disabled={loadingUpdateUserDetails}
+            >
+              {loadingUpdateUserDetails ? <CircularProgress size={24} /> : "Update"}
+            </Button>
+          </form>
+        </Box>
 
-          <Form.Group controlId='lastName' className='mb-3'>
-            <Form.Label>Last Name</Form.Label>
-            <Form.Control
-              type='text'
-              placeholder='Enter Last Name'
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
-          </Form.Group>
+        {/* My Orders */}
+        <Box className="col-span-2">
+          <Typography variant="h5" className="font-bold text-gray-800 mb-6">
+            My Orders
+          </Typography>
+          {errorOrderListMy ? (
+            <Message variant="danger">{errorOrderListMy}</Message>
+          ) : (
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>ID</TableCell>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Total</TableCell>
+                    <TableCell>Paid</TableCell>
+                    <TableCell>Delivered</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {orders?.map((order) => (
+                    <TableRow key={order.orderId}>
+                      <TableCell>{order.orderId}</TableCell>
+                      <TableCell>{order.created_at}</TableCell>
+                      <TableCell>${order.totalPrice}</TableCell>
+                      <TableCell>
+                        {order.paid ? (
+                          order.paymentDate?.substring(0, 10)
+                        ) : (
+                          <i className="fas fa-times text-red-500" />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {order.delivered ? (
+                          order.deliveredDate?.substring(0, 10)
+                        ) : (
+                          <i className="fas fa-times text-red-500" />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Link href={`/order/${order.orderId}`} passHref>
+                          <Button variant="outlined" size="small">
+                            Details
+                          </Button>
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Box>
+      </Box>
 
-          <Form.Group controlId='email' className='mb-3'>
-            <Form.Label>Email Address</Form.Label>
-            <Form.Control
-              type='email'
-              placeholder='Enter email'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </Form.Group>
-
-          <Form.Group controlId='password' className='mb-3'>
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              type='password'
-              placeholder='Enter password'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </Form.Group>
-
-          <Form.Group controlId='confirmPassword' className='mb-3'>
-            <Form.Label>Confirm Password</Form.Label>
-            <Form.Control
-              type='password'
-              placeholder='Confirm password'
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </Form.Group>
-
-          <Button type='submit' variant='primary'>
-            Update
-          </Button>
-        </Form>
-      </Col>
-      <Col md={9}>
-        <h2>My Orders</h2>
-        {errorOrderListMy ? (
-          <Message variant='danger'>{errorOrderListMy}</Message>
-        ) : (
-          <Table striped bordered hover responsive className='table-sm'>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>DATE</th>
-                <th>TOTAL</th>
-                <th>PAID</th>
-                <th>DELIVERED</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order) => (
-                <tr key={order.orderId}>
-                  <td>{order.orderId}</td>
-                  <td>{order.created_at}</td>
-                  <td>{order.totalPrice}</td>
-                  <td>
-                    {order.paid ? (
-                      order.paymentDate?.substring(0, 10)
-                    ) : (
-                      <i className='fas fa-times' style={{ color: 'red' }} />
-                    )}
-                  </td>
-                  <td>
-                    {order.delivered ? (
-                      order.deliveredDate?.substring(0, 10)
-                    ) : (
-                      <i className='fas fa-times' style={{ color: 'red' }} />
-                    )}
-                  </td>
-                  <td>
-                    <Link href={`/order/${order.orderId}`} passHref legacyBehavior>
-                      <Button className='btn-sm' variant='light'>
-                        Details
-                      </Button>
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        )}
-      </Col>
+      {/* Full Page Loader */}
       {(loadingUserDetails || loadingUpdateUserDetails || loadingOrderListMy) && <FullPageLoader />}
-    </Row>
+    </Box>
   );
 };
 

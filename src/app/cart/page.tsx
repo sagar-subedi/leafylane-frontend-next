@@ -1,118 +1,21 @@
 "use client";
 
-// import React, { useEffect } from 'react';
-// import Link from 'next/link';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { Row, Col, ListGroup, Image, Form, Button, Card } from 'react-bootstrap';
-// import Message from '@/components/Message';
-// import CartItem from '@/components/CartItem';
-// import FullPageLoader from '@/components/FullPageLoader';
-// import { getCartDetails } from '@/store/slices/cartSlice';
-
-// const CartScreen = (props) => {
-//   const productId = props.match.params.id;
-//   const qty = props.location.search ? Number(props.location.search.split('=')[1]) : 1;
-//   const dispatch = useDispatch();
-//   const userLogin = useSelector((state) => state.userLogin);
-//   const cartState = useSelector((state) => state.cart);
-//   const { cart } = cartState;
-//   let loading = cartState.loading;
-//   let error = cartState.error;
-//   const { userInfo } = userLogin;
-//   const redirect = props.location.pathname + props.location.search;
-
-//   useEffect(() => {
-//     if (userInfo === null || userInfo === undefined) {
-//       props.history.push(`/login?redirect=${redirect}`);
-//       return;
-//     }
-//     if (productId) {
-//       addToCart();
-//     } else {
-//       getCartDetail();
-//     }
-//   }, [dispatch, productId, qty, userInfo]);
-
-//   const addToCart = (pId, q) => {
-//     const addToCartRequestBody = {
-//       productId: pId || productId,
-//       quantity: q || qty
-//     };
-//     dispatch(addToCart(addToCartRequestBody));
-//   };
-
-//   const getCartDetail = () => {
-//     dispatch(getCartDetails());
-//   };
-
-//   const checkoutHandler = () => {
-//     props.history.push('/login?redirect=shipping');
-//   };
-
-//   return (
-//     <>
-//       {error ? (
-//         <Message variant='danger'> {JSON.stringify(error.message)}</Message>
-//       ) : (
-//         <>
-//           <Row>
-//             <h1>Shopping Cart</h1>
-//           </Row>
-//           <Row>
-//             <Col md={8}>
-//               {cart == null || cart?.cartItems?.length == 0 ? (
-//                 <Message>
-//                   Your cart is empty <Link href='/'>Go Back</Link>
-//                 </Message>
-//               ) : (
-//                 <ListGroup.Item variant='flush'>
-//                   {cart?.cartItems?.map((item) => (
-//                     <CartItem key={item.productId} item={item} addToCart={addToCart}></CartItem>
-//                   ))}
-//                 </ListGroup.Item>
-//               )}
-//               <Row className='m-5 justify-content-md-center'>
-//                 <Link href={'/'}>
-//                   <a>Add more books</a>
-//                 </Link>
-//               </Row>
-//             </Col>
-//             <Col md={4}>
-//               <Card>
-//                 <ListGroup variant='flush'>
-//                   <ListGroup.Item>
-//                     <h3>Subtotal ({cart?.cartItems?.length}) Items</h3>
-//                   </ListGroup.Item>
-//                   <ListGroup.Item>
-//                     <h3>${cart?.totalPrice}</h3>
-//                   </ListGroup.Item>
-//                   <ListGroup.Item>
-//                     <Button type='button' className='btn-block' disabled={cart?.cartItems?.length === 0} onClick={checkoutHandler}>
-//                       Proceed To Checkout
-//                     </Button>
-//                   </ListGroup.Item>
-//                 </ListGroup>
-//               </Card>
-//             </Col>
-//           </Row>
-//         </>
-//       )}
-//       {loading && <FullPageLoader></FullPageLoader>}
-//     </>
-//   );
-// };
-
-// export default CartScreen;
-
 import React, { useEffect } from "react";
 import Link from "next/link";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { Row, Col, ListGroup, Button, Card } from "react-bootstrap";
 import Message from "@/components/Message";
 import CartItem from "@/components/CartItem";
 import FullPageLoader from "@/components/FullPageLoader";
-import { getCartDetails, addToCart } from "@/store/slices/cartSlice";
+import { getCartDetails } from "@/store/slices/cartSlice";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Divider,
+  Typography,
+} from "@mui/material";
 
 const CartScreen = () => {
   const router = useRouter();
@@ -140,60 +43,71 @@ const CartScreen = () => {
   };
 
   return (
-    <>
+    <Box className="max-w-7xl mx-auto px-4 py-8">
       {error ? (
         <Message variant="danger">{JSON.stringify(error)}</Message>
       ) : (
         <>
-          <Row>
-            <h1>Shopping Cart</h1>
-          </Row>
-          <Row>
-            <Col md={8}>
+          {/* Page Title */}
+          <Typography variant="h4" className="font-bold text-gray-800 mb-6">
+            Shopping Cart
+          </Typography>
+
+          <div className="flex flex-col md:flex-row gap-8">
+            {/* Cart Items Section */}
+            <div className="flex-1">
               {!cart?.data?.cartItems?.length ? (
                 <Message>
-                  Your cart is empty <Link href="/">Go Back</Link>
+                  Your cart is empty. <Link href="/" className="text-blue-600">Go Back</Link>
                 </Message>
               ) : (
-                <ListGroup variant="flush">
+                <div className="space-y-4">
                   {cart.data.cartItems.map((item) => (
-                    <CartItem key={item.productId} item={item} />
+                    <CartItem key={item.productId} item={item} addToCart={undefined} />
                   ))}
-                </ListGroup>
+                </div>
               )}
-              <Row className="m-5 justify-content-md-center">
-                <Link href="/">Add more Stuffs</Link>
-              </Row>
-            </Col>
-            <Col md={4}>
-              <Card>
-                <ListGroup variant="flush">
-                  <ListGroup.Item>
-                    <h3>Subtotal ({cart?.data?.cartItems?.length}) Items</h3>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <h3>${cart?.data?.totalPrice ?? 0}</h3>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <Button
-                      type="button"
-                      className="btn-block"
-                      disabled={!cart?.data?.cartItems?.length}
-                      onClick={checkoutHandler}
-                    >
-                      Proceed To Checkout
-                    </Button>
-                  </ListGroup.Item>
-                </ListGroup>
+              <div className="mt-6">
+                <Link href="/" className="text-blue-600 underline">
+                  Add more items
+                </Link>
+              </div>
+            </div>
+
+            {/* Summary Section */}
+            <div className="w-full md:w-1/3">
+              <Card className="shadow-md">
+                <CardContent>
+                  <Typography variant="h5" className="font-bold text-gray-800 mb-4">
+                    Order Summary
+                  </Typography>
+                  <Divider className="mb-4" />
+                  <div className="flex justify-between mb-4">
+                    <Typography variant="body1" className="text-gray-600">
+                      Subtotal ({cart?.data?.cartItems?.length} items):
+                    </Typography>
+                    <Typography variant="body1" className="font-bold text-gray-800">
+                      ${cart?.data?.totalPrice ?? 0}
+                    </Typography>
+                  </div>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    fullWidth
+                    disabled={!cart?.data?.cartItems?.length}
+                    onClick={checkoutHandler}
+                  >
+                    Proceed to Checkout
+                  </Button>
+                </CardContent>
               </Card>
-            </Col>
-          </Row>
+            </div>
+          </div>
         </>
       )}
       {loading && <FullPageLoader />}
-    </>
+    </Box>
   );
 };
 
 export default CartScreen;
-
