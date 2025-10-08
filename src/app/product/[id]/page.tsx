@@ -1,234 +1,8 @@
-// "use client"
-// import React, { useEffect, useState } from 'react';
-// import { BACKEND_API_GATEWAY_URL } from '@/constants/appConstants';
-// import { Button, Card, Col, Form, Image, ListGroup, ListGroupItem, Row } from 'react-bootstrap';
-// import { useDispatch, useSelector } from 'react-redux';
-// import Link from 'next/link';
-// import FullPageLoader from '@/components/FullPageLoader';
-// import Loader from '@/components/Loader';
-// import Message from '@/components/Message';
-// import Rating from '@/components/Rating';
-// import { getImageApi, getProductDetailApi } from '@/utils/RestApiCalls';
-// import { createProductReview, listProductReviews } from '@/store/slices/productSlice';
-
-// const ProductScreen = (props) => {
-//   const [qty, setQty] = useState(1);
-//   const [rating, setRating] = useState(0);
-//   const [reviewMessage, setReviewMessage] = useState('');
-//   const [productimageBase64, setProductimageBase64] = useState(null);
-//   const [product, setProduct] = useState(null);
-
-//   const dispatch = useDispatch();
-//   const productDetails = useSelector((state) => state.product);
-//   const { loading, error } = productDetails;
-
-//   const productReviews = useSelector((state) => state.product.reviews);
-//   const { loading: loadingProductReviews, error: errorProductReviews, reviews } = productReviews;
-
-//   const userLogin = useSelector((state) => state.user);
-//   const { userInfo } = userLogin;
-
-//   const productReviewCreate = useSelector((state) => state.product);
-//   const { success: successProductReview, loading: loadingProductReview, error: errorProductReview } = productReviewCreate;
-
-//   useEffect(async () => {
-//     // setProductimageBase64(null);
-//     // dispatch(listProductDetailsAction(props.match.params.id));
-//     console.log("Props", props)
-//     // await getProductDetailApi(props.match?.params.id).then((r) => {
-//     //   setProduct(r);
-//     // });
-
-//     await getProductDetailApi("10").then((r) => {
-//       setProduct(r);
-//     });
-//     // dispatch(listProductReviews(props.match.params.id));
-//     dispatch(listProductReviews("10"));
-
-//     // if (product?.imageId) {
-//     await getImageApi(product?.imageId).then((r) => {
-//       setProductimageBase64(r);
-//     });
-//     // }
-//   }, [dispatch, product?.imageId]);
-
-//   const addToCartHandler = () => {
-//     props.history.push(`/cart/${props.match.params.id}?qty=${qty}`);
-//   };
-
-//   const createProductReviewHandler = (e) => {
-//     e.preventDefault();
-//     dispatch(
-//       createProductReview({
-//         productId: props.match.params.id,
-//         ratingValue: rating,
-//         reviewMessage: reviewMessage
-//       })
-//     );
-//   };
-
-//   return (
-//     <>
-//       <Link className='btn btn-dark my-3' href='/'>
-//         Go Back
-//       </Link>
-
-//       {error ? (
-//         <Message variant='danger'></Message>
-//       ) : product ? (
-//         <>
-//           <Row>
-//             <Col md={6}>
-//               {productimageBase64 && (
-//                 <div style={{ minWidth: '100%', height: '400px' }}>
-//                   <Image
-//                     style={{ height: '100%', width: '100%' }}
-//                     src={`${BACKEND_API_GATEWAY_URL}/api/catalog/image/${product?.imageId}`}
-//                     alt={product.productName}
-//                     fluid
-//                   ></Image>
-//                 </div>
-//               )}
-//             </Col>
-//             <Col md={3} style={{ borderLeft: '1px solid #eee' }}>
-//               <ListGroup variant='flush'>
-//                 <ListGroupItem>
-//                   <h4>{product.productName}</h4>
-//                 </ListGroupItem>
-//                 <ListGroupItem>
-//                   <Rating value={product.averageRating} text={`${product.noOfRatings} reviews`}></Rating>
-//                 </ListGroupItem>
-//                 <ListGroupItem>Price : ${product.price}</ListGroupItem>
-//                 <ListGroupItem>Description : {product.description}</ListGroupItem>
-//               </ListGroup>
-//             </Col>
-//             <Col md={3}>
-//               <Card>
-//                 <ListGroup variant='flush'>
-//                   <ListGroupItem>
-//                     <Row>
-//                       <Col>Price:</Col>
-//                       <Col>
-//                         <strong>${product.price}</strong>
-//                       </Col>
-//                     </Row>
-//                   </ListGroupItem>
-
-//                   <ListGroupItem>
-//                     <Row>
-//                       <Col>Status:</Col>
-//                       <Col>{product.availableItemCount > 0 ? 'In Stock' : 'Out of Stock'}</Col>
-//                     </Row>
-//                   </ListGroupItem>
-
-//                   {product.availableItemCount > 0 && (
-//                     <ListGroup.Item>
-//                       <Row>
-//                         <Col>Qty</Col>
-//                         <Col>
-//                           <Form.Control as='select' value={qty} onChange={(e) => setQty(e.target.value)}>
-//                             {product.availableItemCount > 10
-//                               ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((x) => (
-//                                   <option key={x + 1} value={x + 1}>
-//                                     {x + 1}
-//                                   </option>
-//                                 ))
-//                               : [...Array(product.availableItemCount).keys()].map((x) => (
-//                                   <option key={x + 1} value={x + 1}>
-//                                     {x + 1}
-//                                   </option>
-//                                 ))}
-//                           </Form.Control>
-//                         </Col>
-//                       </Row>
-//                     </ListGroup.Item>
-//                   )}
-
-//                   <ListGroupItem>
-//                     <Button onClick={addToCartHandler} className='btn-block' type='button' disabled={product.availableItemCount <= 0}>
-//                       Add to Cart
-//                     </Button>
-//                   </ListGroupItem>
-//                 </ListGroup>
-//               </Card>
-//             </Col>
-//           </Row>
-//           <Row
-//             className='my-4 py-4'
-//             style={{
-//               borderTop: '1px solid #eee',
-//               borderBottom: '1px solid #eee'
-//             }}
-//           >
-//             <Col md={6}>
-//               <h2>Reviews</h2>
-//               {reviews?.length === 0 && <Message>No Reviews</Message>}
-//               <ListGroup variant='flush'>
-//                 {reviews?.map((review) => (
-//                   <ListGroup.Item key={review.reviewId}>
-//                     <strong>{review.userName}</strong>
-//                     <Rating value={review.ratingValue} />
-//                     {/* <p>{review.created_at.substring(0, 10)}</p> */}
-//                     <p>{review.reviewMessage}</p>
-//                   </ListGroup.Item>
-//                 ))}
-//               </ListGroup>
-//             </Col>
-//             <Col md={6} style={{ borderLeft: '1px solid #eee' }}>
-//               <ListGroup.Item>
-//                 <h2>Write a Customer Review</h2>
-//                 {successProductReview && <Message variant='success'>Review submitted successfully</Message>}
-//                 {loadingProductReview && <Loader />}
-//                 {errorProductReview && <Message variant='danger'>{errorProductReview}</Message>}
-//                 {userInfo ? (
-//                   <Form onSubmit={createProductReviewHandler}>
-//                     <Form.Group controlId='rating'>
-//                       <Form.Label>Rating</Form.Label>
-//                       <Form.Control as='select' value={rating} onChange={(e) => setRating(e.target.value)}>
-//                         <option value=''>Select...</option>
-//                         <option value='1'>1 - Poor</option>
-//                         <option value='2'>2 - Fair</option>
-//                         <option value='3'>3 - Good</option>
-//                         <option value='4'>4 - Very Good</option>
-//                         <option value='5'>5 - Excellent</option>
-//                       </Form.Control>
-//                     </Form.Group>
-//                     <Form.Group controlId='reviewMessage'>
-//                       <Form.Label>Review</Form.Label>
-//                       <Form.Control
-//                         as='textarea'
-//                         rows={3}
-//                         value={reviewMessage}
-//                         onChange={(e) => setReviewMessage(e.target.value)}
-//                       ></Form.Control>
-//                     </Form.Group>
-//                     <Button disabled={loadingProductReview} type='submit' variant='primary'>
-//                       Submit
-//                     </Button>
-//                   </Form>
-//                 ) : (
-//                   <Message>
-//                     Please <Link href='/login'>sign in</Link> to write a review{' '}
-//                   </Message>
-//                 )}
-//               </ListGroup.Item>
-//             </Col>
-//           </Row>
-//         </>
-//       ) : null}
-//       {loading && <FullPageLoader></FullPageLoader>}
-//     </>
-//   );
-// };
-
-// export default ProductScreen;
-
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation"; // ✅ Correctly use routing in Client Component
+import { useRouter, useParams } from "next/navigation";
 import { BACKEND_API_GATEWAY_URL } from "@/constants/appConstants";
-import { Button, Card, Col, Form, Image, ListGroup, ListGroupItem, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import FullPageLoader from "@/components/FullPageLoader";
@@ -238,9 +12,22 @@ import Rating from "@/components/Rating";
 import { getImageApi, getProductDetailApi } from "@/utils/RestApiCalls";
 import { createProductReview, listProductReviews } from "@/store/slices/productSlice";
 import { addToCart } from "@/store/slices/cartSlice";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
 
 const ProductScreen = () => {
-  const { id } = useParams(); // ✅ Get dynamic product ID
+  const { id } = useParams();
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -262,9 +49,8 @@ const ProductScreen = () => {
   const productReviewCreate = useSelector((state: any) => state.product);
   const { success: successProductReview, loading: loadingProductReview, error: errorProductReview } = productReviewCreate;
 
-  // ✅ Fetch product details & reviews
   useEffect(() => {
-    if (!id) return; // Ensure ID is available
+    if (!id) return;
 
     const fetchProduct = async () => {
       try {
@@ -284,13 +70,11 @@ const ProductScreen = () => {
     fetchProduct();
   }, [dispatch, id]);
 
-  // ✅ Handle "Add to Cart"
   const addToCartHandler = async () => {
     await dispatch(addToCart({ productId: id, quantity: qty }));
     router.push("/cart");
   };
 
-  // ✅ Handle "Submit Review"
   const createProductReviewHandler = (e: React.FormEvent) => {
     e.preventDefault();
     dispatch(
@@ -303,142 +87,158 @@ const ProductScreen = () => {
   };
 
   return (
-    <>
-      <Link className="btn btn-dark my-3" href="/">
-        Go Back
+    <Box className="max-w-7xl mx-auto px-4 py-8">
+      <Link href="/" passHref>
+        <Button variant="contained" color="success" className="mb-6">
+          Go Back
+        </Button>
       </Link>
 
       {error ? (
-        <Message variant="danger">An Error Occured</Message>
+        <Message variant="danger">An Error Occurred</Message>
       ) : product ? (
         <>
-          <Row>
-            <Col md={6}>
+          {/* First Row: Product Image, Description, Add to Cart */}
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* Product Image */}
+            <div className="flex-1">
               {productimageBase64 && (
-                <div style={{ minWidth: "100%", height: "400px" }}>
-                  <Image
-                    style={{ height: "100%", width: "100%" }}
-                    src={`${BACKEND_API_GATEWAY_URL}/api/catalog/image/${product?.imageId}`}
-                    alt={product.productName}
-                    fluid
-                  ></Image>
-                </div>
+                <img
+                  src={`${BACKEND_API_GATEWAY_URL}/api/catalog/image/${product?.imageId}`}
+                  alt={product.productName}
+                  className="rounded-lg shadow-md w-full h-[450px] object-cover object-center"
+                />
               )}
-            </Col>
-            <Col md={3} style={{ borderLeft: "1px solid #eee" }}>
-              <ListGroup variant="flush">
-                <ListGroupItem>
-                  <h4>{product.productName}</h4>
-                </ListGroupItem>
-                <ListGroupItem>
-                  <Rating value={product.averageRating} text={`${product.noOfRatings} reviews`}></Rating>
-                </ListGroupItem>
-                <ListGroupItem>Price : ${product.price}</ListGroupItem>
-                <ListGroupItem>Description : {product.description}</ListGroupItem>
-              </ListGroup>
-            </Col>
-            <Col md={3}>
-              <Card>
-                <ListGroup variant="flush">
-                  <ListGroupItem>
-                    <Row>
-                      <Col>Price:</Col>
-                      <Col>
-                        <strong>${product.price}</strong>
-                      </Col>
-                    </Row>
-                  </ListGroupItem>
+            </div>
 
-                  <ListGroupItem>
-                    <Row>
-                      <Col>Status:</Col>
-                      <Col>{product.availableItemCount > 0 ? "In Stock" : "Out of Stock"}</Col>
-                    </Row>
-                  </ListGroupItem>
-
-                  {product.availableItemCount > 0 && (
-                    <ListGroup.Item>
-                      <Row>
-                        <Col>Qty</Col>
-                        <Col>
-                          <Form.Control as="select" value={qty} onChange={(e) => setQty(Number(e.target.value))}>
-                            {[...Array(Math.min(10, product.availableItemCount)).keys()].map((x) => (
-                              <option key={x + 1} value={x + 1}>
-                                {x + 1}
-                              </option>
-                            ))}
-                          </Form.Control>
-                        </Col>
-                      </Row>
-                    </ListGroup.Item>
-                  )}
-
-                  <ListGroupItem>
-                    <Button onClick={addToCartHandler} className="btn-block" type="button" disabled={product.availableItemCount <= 0}>
-                      Add to Cart
-                    </Button>
-                  </ListGroupItem>
-                </ListGroup>
+            {/* Product Details */}
+            <div className="flex-1">
+              <Card className="shadow-md">
+                <CardContent>
+                  <Typography variant="h4" className="font-bold text-gray-800 mb-4">
+                    {product.productName}
+                  </Typography>
+                  <Rating value={product.averageRating} text={`${product.noOfRatings} reviews`} />
+                  <Typography variant="h6" className="mt-4 text-gray-700">
+                    Price: <strong>${product.price}</strong>
+                  </Typography>
+                  <Typography variant="body1" className="mt-2 text-gray-600">
+                    {product.description}
+                  </Typography>
+                </CardContent>
               </Card>
-            </Col>
-          </Row>
+            </div>
 
-          <Row className="my-4 py-4" style={{ borderTop: "1px solid #eee", borderBottom: "1px solid #eee" }}>
-            <Col md={6}>
-              <h2>Reviews</h2>
-              {reviews?.length === 0 && <Message>No Reviews</Message>}
-              <ListGroup variant="flush">
-                {reviews?.map((review) => (
-                  <ListGroup.Item key={review.reviewId}>
-                    <strong>{review.userName}</strong>
-                    <Rating value={review.ratingValue} />
-                    <p>{review.reviewMessage}</p>
-                  </ListGroup.Item>
-                ))}
-              </ListGroup>
-            </Col>
-
-            <Col md={6} style={{ borderLeft: "1px solid #eee" }}>
-              <ListGroup.Item>
-                <h2>Write a Customer Review</h2>
-                {successProductReview && <Message variant="success">Review submitted successfully</Message>}
-                {loadingProductReview && <Loader />}
-                {errorProductReview && <Message variant="danger">{errorProductReview}</Message>}
-
-                {userInfo ? (
-                  <Form onSubmit={createProductReviewHandler}>
-                    <Form.Group controlId="rating">
-                      <Form.Label>Rating</Form.Label>
-                      <Form.Control as="select" value={rating} onChange={(e) => setRating(Number(e.target.value))}>
-                        <option value="">Select...</option>
-                        {[1, 2, 3, 4, 5].map((value) => (
-                          <option key={value} value={value}>
-                            {value} - {["Poor", "Fair", "Good", "Very Good", "Excellent"][value - 1]}
-                          </option>
+            {/* Add to Cart Section */}
+            <div className="flex-1">
+              <Card className="shadow-md">
+                <CardContent>
+                  <Typography variant="h6" className="mb-4">
+                    Price: <strong>${product.price}</strong>
+                  </Typography>
+                  <Typography variant="body1" className="mb-4">
+                    Status: {product.availableItemCount > 0 ? "In Stock" : "Out of Stock"}
+                  </Typography>
+                  {product.availableItemCount > 0 && (
+                    <FormControl fullWidth className="mb-4">
+                      <InputLabel>Quantity</InputLabel>
+                      <Select value={qty} onChange={(e) => setQty(Number(e.target.value))}>
+                        {[...Array(Math.min(10, product.availableItemCount)).keys()].map((x) => (
+                          <MenuItem key={x + 1} value={x + 1}>
+                            {x + 1}
+                          </MenuItem>
                         ))}
-                      </Form.Control>
-                    </Form.Group>
-                    <Form.Group controlId="reviewMessage">
-                      <Form.Label>Review</Form.Label>
-                      <Form.Control as="textarea" rows={3} value={reviewMessage} onChange={(e) => setReviewMessage(e.target.value)} />
-                    </Form.Group>
-                    <Button disabled={loadingProductReview} type="submit" variant="primary">
-                      Submit
-                    </Button>
-                  </Form>
-                ) : (
-                  <Message>
-                    Please <Link href="/login">sign in</Link> to write a review
-                  </Message>
-                )}
-              </ListGroup.Item>
-            </Col>
-          </Row>
+                      </Select>
+                    </FormControl>
+                  )}
+                  <Button
+                    variant="contained"
+                    color="success"
+                    fullWidth
+                    onClick={addToCartHandler}
+                    disabled={product.availableItemCount <= 0}
+                  >
+                    Add to Cart
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Second Row: Reviews and Add Review */}
+          <div className="flex flex-col md:flex-row gap-6 mt-12">
+            {/* Reviews Section */}
+            <div className="flex-1">
+              <Typography variant="h5" className="mb-4 font-bold text-gray-800">
+                Reviews
+              </Typography>
+              {reviews?.length === 0 && <Message>No Reviews</Message>}
+              {reviews?.map((review) => (
+                <Card key={review.reviewId} className="mb-4 shadow-md">
+                  <CardContent>
+                    <Typography variant="h6" className="font-bold">
+                      {review.userName}
+                    </Typography>
+                    <Rating value={review.ratingValue} />
+                    <Typography variant="body1" className="mt-2">
+                      {review.reviewMessage}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Add Review Section */}
+            <div className="flex-1">
+              <Card className="shadow-md">
+                <CardContent>
+                  <Typography variant="h5" className="mb-4 font-bold text-gray-800">
+                    Write a Customer Review
+                  </Typography>
+                  {successProductReview && <Message variant="success">Review submitted successfully</Message>}
+                  {loadingProductReview && <Loader />}
+                  {errorProductReview && <Message variant="danger">{errorProductReview}</Message>}
+
+                  {userInfo ? (
+                    <form onSubmit={createProductReviewHandler}>
+                      <FormControl fullWidth className="mb-4">
+                        <InputLabel className="mb-2">Rating</InputLabel>
+                        <Select value={rating} onChange={(e) => setRating(Number(e.target.value))}>
+                          <MenuItem value="">Select...</MenuItem>
+                          {[1, 2, 3, 4, 5].map((value) => (
+                            <MenuItem key={value} value={value}>
+                              {value} - {["Poor", "Fair", "Good", "Very Good", "Excellent"][value - 1]}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      <TextField
+                        label="Review"
+                        multiline
+                        rows={3}
+                        fullWidth
+                        value={reviewMessage}
+                        onChange={(e) => setReviewMessage(e.target.value)}
+                        className="mb-4"
+                      />
+                      <Button variant="contained" color="success" type="submit" fullWidth disabled={loadingProductReview}>
+                        Submit
+                      </Button>
+                    </form>
+                  ) : (
+                    <Message>
+                      Please <Link href="/login">sign in</Link> to write a review
+                    </Message>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </>
       ) : null}
 
       {loading && <FullPageLoader />}
-    </>
+    </Box>
   );
 };
 

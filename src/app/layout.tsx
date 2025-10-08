@@ -1,6 +1,6 @@
 "use client"
-import 'bootstrap/dist/css/bootstrap.min.css'; 
 import "@/styles/App.css";
+import './globals.css';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ReactNode } from "react";
@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Provider store={store}>
         <Header/>
         <ToastContainer position="top-right" autoClose={3000} />
-        <main className="py-3">
+        <main className="flex justify-center py-3">
           <div className="container">
           <Suspense fallback={<div>Loading...</div>}>
             {children}

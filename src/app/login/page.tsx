@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Form, Button, Row, Col } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "@/components/Message";
 import FormContainer from "@/components/FormContainer";
@@ -13,6 +12,7 @@ import { useSearchParams } from "next/navigation";
 import pkceChallenge from "pkce-challenge";
 import { getUserInfoApi } from "@/utils/RestApiCalls";
 import { USER_LOGIN_SUCCESS } from "@/constants/userConstants";
+import { Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
 
 const LoginScreen = () => {
   const [userNameOrEmail, setUserNameOrEmail] = useState("");
@@ -44,8 +44,8 @@ const LoginScreen = () => {
     dispatch(login({ userNameOrEmail, password }));
   };
 
-  const AUTH_URL = "https://oauth2-auth-server.sagar88.com.np/api/auth/authorize";
-  const LOGIN_URL = "https://oauth2-auth-server.sagar88.com.np/api/auth/login"
+  const AUTH_URL = "http://localhost:9080/api/auth/authorize";
+  const LOGIN_URL = "http://localhost:9080/api/auth/login"
   const CLIENT_ID = "leafylane-client";
   const REDIRECT_URI = "https://leafylane.sagar88.com.np/callback"; // Change to match frontend
   const SCOPE = "store.shop offline_access";
@@ -85,7 +85,7 @@ const LoginScreen = () => {
 
   async function exchangeAuthorizationCode(authorizationCode: any, codeVerifier: any) {
     try {
-      const response = await fetch("https://oauth2-auth-server.sagar88.com.np/oauth2/token", {
+      const response = await fetch("http://localhost:9080/oauth2/token", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
@@ -130,53 +130,77 @@ const LoginScreen = () => {
   }
 
   return (
-    <FormContainer>
-      <h1>Sign In</h1>
+    <Box className="max-w-md mx-auto px-4 py-8 bg-white shadow-md rounded-md">
+      {/* Page Title */}
+      <Typography variant="h4" className="font-bold text-gray-800 mb-6 text-center">
+        Sign In
+      </Typography>
+
+      {/* Error Message */}
       {error && <Message variant="danger">{error}</Message>}
-      <Form onSubmit={loginSubmitHandler}>
-        <Form.Group controlId="userNameOrEmail">
-          <Form.Label>Email Address</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Username or Email"
+
+      {/* Login Form */}
+      <form onSubmit={()=>{loginWithPkce(userNameOrEmail, password)}}>
+        <Box className="mb-4">
+          <TextField
+            label="Username or Email"
+            variant="outlined"
+            fullWidth
+            required
             value={userNameOrEmail}
             onChange={(e) => setUserNameOrEmail(e.target.value)}
           />
-        </Form.Group>
-
-        <Form.Group controlId="password">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
+        </Box>
+        <Box className="mb-6">
+          <TextField
+            label="Password"
             type="password"
-            placeholder="Password"
+            variant="outlined"
+            fullWidth
+            required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-        </Form.Group>
-
-        <Button onClick={()=>{loginWithPkce(userNameOrEmail, password)}} type="submit" variant="primary">
-          Sign In
+        </Box>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          disabled={loading}
+        >
+          {loading ? <CircularProgress size={24} /> : "Sign In"}
         </Button>
-      </Form>
+      </form>
 
-      <Row className="py-3">
-        <Col>
+      {/* Register Link */}
+      <Box className="mt-4 text-center">
+        <Typography variant="body1" className="text-gray-600">
           New Customer?{" "}
-          <Link href={redirect ? `/register?redirect=${redirect}` : "/register"}>
+          <Link
+            href={redirect ? `/register?redirect=${redirect}` : "/register"}
+            className="text-blue-600 hover:underline"
+          >
             Register
           </Link>
-        </Col>
-      </Row>
-      {/* <Row className="py-3">
-        <Col>
-          <Button variant="secondary" onClick={loginWithOAuth}>
-            Login with OAuth
-          </Button>
-        </Col>
-      </Row> */}
+        </Typography>
+      </Box>
 
+      {/* OAuth Login (Optional) */}
+      {/* <Box className="mt-4 text-center">
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={loginWithOAuth}
+          className="w-full"
+        >
+          Login with OAuth
+        </Button>
+      </Box> */}
+
+      {/* Full Page Loader */}
       {loading && <FullPageLoader />}
-    </FormContainer>
+    </Box>
   );
 };
 

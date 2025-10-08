@@ -3,7 +3,19 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Table, Button } from "react-bootstrap";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+  Paper,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { isAdmin } from "@/utils/CommonUtils";
 import Message from "@/components/Message";
@@ -32,69 +44,82 @@ const UserListScreen = () => {
   }, [dispatch, router, successDelete, userInfo]);
 
   const deleteHandler = (userId) => {
-    if (window.confirm("Are you sure")) {
+    if (window.confirm("Are you sure?")) {
       dispatch(deleteUser(userId));
     }
   };
 
   return (
-    <>
-      <h1>Users</h1>
+    <Box className="max-w-7xl mx-auto px-4 py-8">
+      <Typography variant="h4" className="font-bold text-gray-800 mb-6">
+        Users
+      </Typography>
+
       {userDeleteError && <Message variant="danger">{userDeleteError}</Message>}
       {loading ? (
         <Loader />
       ) : error ? (
         <Message variant="danger">{error}</Message>
       ) : (
-        <Table striped bordered hover responsive className="table-sm">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>USERNAME</th>
-              <th>FIRST NAME</th>
-              <th>LAST NAME</th>
-              <th>EMAIL</th>
-              <th>ROLES</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.userId}>
-                <td>{user.userId}</td>
-                <td>{user.userName}</td>
-                <td>{user.firstName}</td>
-                <td>{user.lastName}</td>
-                <td>
-                  <a href={`mailto:${user.email}`}>{user.email}</a>
-                </td>
-                <td>
-                  {user.roles.map((role) => (
-                    <p
-                      key={role.roleName}
-                      className="m-0 p-0"
-                      style={{ color: role.roleName === "ROLE_ADMIN" ? "green" : "black" }}
-                    >
-                      <strong>{role.roleName}</strong>
-                    </p>
-                  ))}
-                </td>
-                <td>
-                  <Link href={`/admin/user/${user.userId}/edit`}>
-                    <Button variant="light" className="btn-sm">
-                      <i className="fas fa-edit"></i>
-                    </Button>
-                  </Link>
-                  <Button variant="danger" className="btn-sm" onClick={() => deleteHandler(user.userId)}>
-                    <i className="fas fa-trash"></i>
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <TableContainer component={Paper} className="shadow-md">
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>USERNAME</TableCell>
+                <TableCell>FIRST NAME</TableCell>
+                <TableCell>LAST NAME</TableCell>
+                <TableCell>EMAIL</TableCell>
+                <TableCell>ROLES</TableCell>
+                <TableCell>ACTIONS</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {users.map((user) => (
+                <TableRow key={user.userId}>
+                  <TableCell>{user.userId}</TableCell>
+                  <TableCell>{user.userName}</TableCell>
+                  <TableCell>{user.firstName}</TableCell>
+                  <TableCell>{user.lastName}</TableCell>
+                  <TableCell>
+                    <a href={`mailto:${user.email}`} className="text-blue-600 hover:underline">
+                      {user.email}
+                    </a>
+                  </TableCell>
+                  <TableCell>
+                    {user.roles.map((role) => (
+                      <Typography
+                        key={role.roleName}
+                        className={`m-0 p-0 ${role.roleName === "ROLE_ADMIN" ? "text-green-600" : "text-black"}`}
+                      >
+                        <strong>{role.roleName}</strong>
+                      </Typography>
+                    ))}
+                  </TableCell>
+                  <TableCell>
+                    <Box className="flex gap-2">
+                      <Link href={`/admin/user/${user.userId}/edit`} passHref>
+                        <Button variant="outlined" size="small" color="primary">
+                          <i className="fas fa-edit">Edit</i>
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        color="error"
+                        onClick={() => deleteHandler(user.userId)}
+                      >
+                        <i className="fas fa-trash">Delete</i>
+                      </Button>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
-    </>
+    </Box>
   );
 };
 

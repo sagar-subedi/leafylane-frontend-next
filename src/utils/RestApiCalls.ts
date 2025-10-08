@@ -17,13 +17,12 @@ export const postSignupApi = (singupRequestBody) => {
 export const postLoginApi = async (loginRequestBody) => {
   const axiosConfig = {
     headers: {
-      'Authorization': 'Basic ' + btoa(APP_CLIENT_ID + ':' + APP_CLIENT_SECRET),
       'Content-Type': 'application/x-www-form-urlencoded'
     }
   };
   const loginRequestBodyEncoded = qs.stringify(loginRequestBody);
   const responseData = await axios
-    .post(`${BACKEND_API_GATEWAY_URL}/api/account/oauth/token`, loginRequestBodyEncoded, axiosConfig)
+    .post(`${BACKEND_API_GATEWAY_URL}/api/account/oauth2/token`, loginRequestBodyEncoded, axiosConfig)
     .then((response) => {
       return response.data;
     });

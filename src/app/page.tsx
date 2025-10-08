@@ -1,4 +1,4 @@
-"use client"
+"use client";
 // import { SET_NAME } from "@/store/slices/profileSlice";
 // import Image from "next/image";
 // import { useRef } from "react";
@@ -27,26 +27,23 @@
 //   );
 // }
 
-
-
-
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import Product from '@/components/Product';
-import Message from '@/components/Message';
-import { Col, Row } from 'react-bootstrap';
-import FullPageLoader from '@/components/FullPageLoader';
-import ReactPaginate from 'react-paginate';
-import { listProducts } from '@/store/slices/productSlice';
-import { setupAxiosInterceptors } from '../utils/refreshTokenInterceptor';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Product from "@/components/Product";
+import Message from "@/components/Message";
+import { Col, Row } from "react-bootstrap";
+import FullPageLoader from "@/components/FullPageLoader";
+import ReactPaginate from "react-paginate";
+import { listProducts } from "@/store/slices/productSlice";
+import { setupAxiosInterceptors } from "../utils/refreshTokenInterceptor";
+import { Pagination } from "@mui/material";
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const productList = useSelector((state) => state.product);
   const { loading, error, products, pageResponse } = productList;
 
-
-setupAxiosInterceptors();
+  setupAxiosInterceptors();
 
   useEffect(() => {
     dispatch(listProducts(0));
@@ -59,36 +56,33 @@ setupAxiosInterceptors();
 
   return (
     <>
-     <h1>Latest Products</h1>
+      <h1 className="text-4xl font-extrabold text-center text-gray-800 mb-8">
+        Latest Products
+      </h1>
       {error ? (
-        <Message variant='danger'>Something wrong happened</Message>
+        <Message variant="danger">Something wrong happened</Message>
       ) : (
         <>
-          <Row>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full max-w-7xl px-4">
             {products.map((product) => (
-              <Col key={product.productId} sm={12} md={6} lg={4} xl={3}>
-                <Product key={product.productId} product={product}></Product>
-              </Col>
+              <div key={product.productId}>
+                <Product product={product} />
+              </div>
             ))}
-          </Row>
+          </div>
           {/* pageResponse?.pageable?.pageNumber */}
-          <Row className='m-5 justify-content-md-center'>
-            <ReactPaginate
-              previousLabel={'Previous'}
-              nextLabel={'Next'}
-              breakLabel={'...'}
-              breakClassName={'break-me'}
-              pageCount={pageResponse?.totalPages}
-              marginPagesDisplayed={50}
-              pageRangeDisplayed={10}
-              onPageChange={(e) => handlePageClick(e)}
-              containerClassName={'pagination'}
-              activeClassName={'page-item active'}
-              pageLinkClassName={'page-link'}
-              previousClassName={'page-link'}
-              nextClassName={'page-link'}
+          <div className="flex justify-center mt-6">
+            <Pagination
+              count={pageResponse?.totalPages || 0}
+              page={pageResponse?.pageable?.pageNumber + 1 || 1}
+              onChange={(event, page) =>
+                handlePageClick({ selected: page - 1 })
+              }
+              variant="outlined"
+              shape="rounded"
+              color="primary"
             />
-          </Row>
+          </div>
         </>
       )}
       {loading && <FullPageLoader></FullPageLoader>}
