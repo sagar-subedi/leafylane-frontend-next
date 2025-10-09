@@ -41,7 +41,8 @@ const LoginScreen = () => {
 
   const loginSubmitHandler = (e) => {
     e.preventDefault();
-    dispatch(login({ userNameOrEmail, password }));
+    loginWithPkce(userNameOrEmail, password);
+    // dispatch(login({ userNameOrEmail, password }));
   };
 
   const AUTH_URL = "http://localhost:9080/api/auth/authorize";
@@ -140,7 +141,7 @@ const LoginScreen = () => {
       {error && <Message variant="danger">{error}</Message>}
 
       {/* Login Form */}
-      <form onSubmit={()=>{loginWithPkce(userNameOrEmail, password)}}>
+      <form onSubmit={loginSubmitHandler}>
         <Box className="mb-4">
           <TextField
             label="Username or Email"
