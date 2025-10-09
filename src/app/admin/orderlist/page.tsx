@@ -62,14 +62,14 @@ const OrderListScreen = () => {
                     {order?.paid ? (
                       order?.paymentDate?.substring(0, 10)
                     ) : (
-                      <i className="fas fa-times text-red-500"></i>
+                      <i className="fas fa-times text-red-500">Pending</i>
                     )}
                   </TableCell>
                   <TableCell>
                     {order?.delivered ? (
                       order?.deliveredDate?.substring(0, 10)
                     ) : (
-                      <i className="fas fa-times text-red-500"></i>
+                      <i className="fas fa-times text-red-500">Pending</i>
                     )}
                   </TableCell>
                   <TableCell>
