@@ -32,7 +32,7 @@ const OrderScreen = () => {
   }, [dispatch, orderId, userInfo, router]);
 
   const deliverHandler = () => {
-    dispatch(deliverOrder(order));
+    // dispatch(deliverOrder(order));
   };
 
   return (
