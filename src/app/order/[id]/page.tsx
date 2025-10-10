@@ -8,6 +8,7 @@ import Message from "@/components/Message";
 import Loader from "@/components/Loader";
 import { getOrderDetailsAction } from "@/store/slices/orderSlice";
 import OrderItem from "@/components/OrderItem";
+import { isAdmin } from "@/utils/CommonUtils";
 
 const OrderScreen = () => {
   const router = useRouter();
@@ -31,7 +32,7 @@ const OrderScreen = () => {
   }, [dispatch, orderId, userInfo, router]);
 
   const deliverHandler = () => {
-    // dispatch(deliverOrder(order));
+    dispatch(deliverOrder(order));
   };
 
   return (
@@ -164,7 +165,7 @@ const OrderScreen = () => {
                     </Typography>
                   </Box>
                   {loadingDeliver && <Loader />}
-                  {userInfo?.isAdmin && order.isPaid && !order.isDelivered && (
+                  {isAdmin() && order.paid && !order.delivered && (
                     <Button
                       variant="contained"
                       color="success"

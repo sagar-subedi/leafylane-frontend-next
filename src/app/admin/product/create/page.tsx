@@ -1,32 +1,40 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useDispatch, useSelector } from 'react-redux';
-import { BACKEND_API_GATEWAY_URL } from '@/constants/appConstants';
-import { Button, Col, Form, Row } from 'react-bootstrap';
-import Link from 'next/link';
-import { createProduct } from '@/store/slices/productSlice';
-import Loader from '@/components/Loader';
-import Message from '@/components/Message';
-import { uploadImageApi, getProductCategories } from '@/utils/RestApiCalls';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { BACKEND_API_GATEWAY_URL } from "@/constants/appConstants";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import Link from "next/link";
+import { createProduct } from "@/store/slices/productSlice";
+import Loader from "@/components/Loader";
+import Message from "@/components/Message";
+import { uploadImageApi, getProductCategories } from "@/utils/RestApiCalls";
 
 const ProductCreateScreen = () => {
   const router = useRouter();
-  const { id: productId } = useParams();
+  const dispatch = useDispatch();
 
-  const [productName, setProductName] = useState('');
+  const [productName, setProductName] = useState("");
   const [price, setPrice] = useState(0);
-  const [image, setImage] = useState('');
+  const [image, setImage] = useState("");
   const [availableItemCount, setAvailableItemCount] = useState(0);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState("");
   const [uploading, setUploading] = useState(false);
   const [productCategories, setProductCategories] = useState([]);
-  const [productCategory, setProductCategory] = useState('');
+  const [productCategory, setProductCategory] = useState("");
 
-  const dispatch = useDispatch();
   const productDetails = useSelector((state) => state.product);
-  const { loading, error, product } = productDetails;
+  const { loading, error } = productDetails;
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -34,30 +42,25 @@ const ProductCreateScreen = () => {
         const res = await getProductCategories();
         setProductCategories(res.page.content);
       } catch (err) {
-        console.error('Failed to fetch categories:', err);
+        console.error("Failed to fetch categories:", err);
       }
     };
     fetchCategories();
-  }, [dispatch, productId, product]);
+  }, []);
 
   const uploadFileHandler = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     const formData = new FormData();
-    formData.append('imageFile', file);
+    formData.append("imageFile", file);
     setUploading(true);
 
     try {
-      const config = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      };
-      const { imageId } = await uploadImageApi(config, formData);
+      const { imageId } = await uploadImageApi({}, formData);
       setImage(imageId);
     } catch (error) {
-      console.error('Image upload failed:', error);
+      console.error("Image upload failed:", error);
     } finally {
       setUploading(false);
     }
@@ -67,7 +70,6 @@ const ProductCreateScreen = () => {
     e.preventDefault();
     dispatch(
       createProduct({
-        productId,
         productName,
         price,
         imageId: image,
@@ -76,111 +78,113 @@ const ProductCreateScreen = () => {
         productCategoryId: productCategory,
       })
     );
-    router.push('/admin/productlist');
+    router.push("/admin/productlist");
   };
 
   return (
-    <>
-      <Link href="/admin/productlist" className="btn btn-dark my-3">
+    <Box className="max-w-4xl mx-auto px-4 py-8">
+      <Link href="/admin/productlist" className="text-blue-600 hover:underline mb-6 inline-block">
         Go Back
       </Link>
-
-      <h1>Create Product</h1>
-      <hr />
+      <Typography variant="h4" className="font-bold text-gray-800 mb-6">
+        Create Product
+      </Typography>
+      <hr className="mb-6" />
 
       {loading ? (
         <Loader />
       ) : error ? (
         <Message variant="danger">{error}</Message>
       ) : (
-        <Form onSubmit={submitHandler}>
-          <Row>
-            <Col md={4}>
-              <Form.Group controlId="image">
-                {image && (
-                  <img
-                    src={`${BACKEND_API_GATEWAY_URL}/api/catalog/image/${image}`}
-                    alt="Product"
-                    className="img-fluid rounded"
-                    style={{ height: '400px' }}
-                  />
-                )}
-                {uploading && <Loader />}
-              </Form.Group>
-              <Form.Control type="file" className="mt-3" onChange={uploadFileHandler} />
-            </Col>
-            <Col>
-              <Form.Group controlId="name">
-                <Form.Label>Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter product name"
+        <form onSubmit={submitHandler}>
+          <Grid container spacing={4}>
+            {/* Image Upload Section */}
+            <Grid item xs={12} md={4}>
+              {image && (
+                <img
+                  src={`${BACKEND_API_GATEWAY_URL}/api/catalog/image/${image}`}
+                  alt="Product"
+                  className="rounded-md object-cover w-full h-64"
+                />
+              )}
+              {uploading && <Loader />}
+              <Button variant="contained" component="label" className="mt-4">
+                Upload Image
+                <input type="file" hidden onChange={uploadFileHandler} />
+              </Button>
+            </Grid>
+
+            {/* Product Details Section */}
+            <Grid item xs={12} md={8}>
+              <Box className="mb-4">
+                <TextField
+                  label="Name"
+                  variant="outlined"
+                  fullWidth
+                  required
                   value={productName}
                   onChange={(e) => setProductName(e.target.value)}
-                  required
                 />
-              </Form.Group>
-
-              <Form.Group controlId="price">
-                <Form.Label>Price</Form.Label>
-                <Form.Control
+              </Box>
+              <Box className="mb-4">
+                <TextField
+                  label="Price"
                   type="number"
-                  placeholder="Enter price"
+                  variant="outlined"
+                  fullWidth
+                  required
                   value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  required
+                  onChange={(e) => setPrice(Number(e.target.value))}
                 />
-              </Form.Group>
-
-              <Form.Group controlId="countInStock">
-                <Form.Label>Count In Stock</Form.Label>
-                <Form.Control
+              </Box>
+              <Box className="mb-4">
+                <TextField
+                  label="Count In Stock"
                   type="number"
-                  placeholder="Enter stock count"
-                  value={availableItemCount}
-                  onChange={(e) => setAvailableItemCount(e.target.value)}
+                  variant="outlined"
+                  fullWidth
                   required
+                  value={availableItemCount}
+                  onChange={(e) => setAvailableItemCount(Number(e.target.value))}
                 />
-              </Form.Group>
-
-              <Form.Group controlId="description">
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  placeholder="Enter description"
+              </Box>
+              <Box className="mb-4">
+                <TextField
+                  label="Description"
+                  variant="outlined"
+                  fullWidth
+                  multiline
+                  rows={4}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  required
                 />
-              </Form.Group>
-
-              <Form.Group controlId="productCategory">
-                <Form.Label>Product Category</Form.Label>
-                <Form.Control
-                  as="select"
+              </Box>
+              <Box className="mb-4">
+                <Typography variant="body1" className="mb-2">
+                  Product Category
+                </Typography>
+                <Select
                   value={productCategory}
                   onChange={(e) => setProductCategory(e.target.value)}
+                  fullWidth
                   required
                 >
-                  <option value="">Select Product Category</option>
-                  {productCategories.length > 0 &&
-                    productCategories.map((pc) => (
-                      <option key={pc.productCategoryId} value={pc.productCategoryId}>
-                        {pc.productCategoryName}
-                      </option>
-                    ))}
-                </Form.Control>
-              </Form.Group>
-
-              <Button type="submit" variant="primary" className="mt-3">
+                  <MenuItem value="">Select Product Category</MenuItem>
+                  {productCategories.map((pc) => (
+                    <MenuItem key={pc.productCategoryId} value={pc.productCategoryId}>
+                      {pc.productCategoryName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Box>
+              <Button type="submit" variant="contained" color="primary" fullWidth>
                 Create Product
               </Button>
-            </Col>
-          </Row>
-        </Form>
+            </Grid>
+          </Grid>
+        </form>
       )}
-    </>
+    </Box>
   );
 };
 
