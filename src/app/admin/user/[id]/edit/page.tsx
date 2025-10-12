@@ -81,7 +81,7 @@ const UserEditScreen = () => {
         roles: selectedRoles,
       };
     dispatch(
-      updateUser(userId, userUpdateRequestBody)
+      updateUser({userId, userUpdateRequestBody})
     );
   };
 
