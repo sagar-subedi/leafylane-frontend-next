@@ -6,7 +6,7 @@ import { Box, Button, Card, CardContent, CircularProgress, Divider, Typography }
 import { useDispatch, useSelector } from "react-redux";
 import Message from "@/components/Message";
 import Loader from "@/components/Loader";
-import { getOrderDetailsAction } from "@/store/slices/orderSlice";
+import { getOrderDetailsAction, deliverOrderAction, resetDeliverOrder } from "@/store/slices/orderSlice";
 import OrderItem from "@/components/OrderItem";
 import { isAdmin } from "@/utils/CommonUtils";
 
@@ -14,14 +14,15 @@ const OrderScreen = () => {
   const router = useRouter();
   const { id: orderId } = useParams();
 
-  const [loadingDeliver, setLoadingDeliver] = useState(false);
-
   const dispatch = useDispatch();
-  const userLogin = useSelector((state) => state.user);
+  const userLogin = useSelector((state: any) => state.user);
   const { userInfo } = userLogin;
 
-  const orderDetail = useSelector((state) => state.order.orderDetails);
+  const orderDetail = useSelector((state: any) => state.order.orderDetails);
   const { order, loading, error } = orderDetail;
+
+  const deliverOrderState = useSelector((state: any) => state.order.deliverOrder);
+  const { loading: loadingDeliver, success: successDeliver } = deliverOrderState;
 
   useEffect(() => {
     if (!userInfo) {
@@ -31,8 +32,15 @@ const OrderScreen = () => {
     }
   }, [dispatch, orderId, userInfo, router]);
 
+  useEffect(() => {
+    if (successDeliver) {
+      dispatch(getOrderDetailsAction(orderId));
+      dispatch(resetDeliverOrder());
+    }
+  }, [dispatch, successDeliver, orderId]);
+
   const deliverHandler = () => {
-    // dispatch(deliverOrder(order));
+    dispatch(deliverOrderAction(order.orderId));
   };
 
   return (
@@ -186,3 +194,4 @@ const OrderScreen = () => {
 };
 
 export default OrderScreen;
+

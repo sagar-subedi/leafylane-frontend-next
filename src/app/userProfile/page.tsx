@@ -35,41 +35,46 @@ const ProfileScreen = () => {
 
   const dispatch = useDispatch();
 
-  const userLogin = useSelector((state) => state.user);
+  const userLogin = useSelector((state: any) => state.user);
   const { userInfo } = userLogin;
 
-  const userDetails = useSelector((state) => state.user.getUserDetails);
+  const userDetails = useSelector((state: any) => state.user.getUserDetails);
   const { error: errorUserDetails, loading: loadingUserDetails, user } = userDetails;
 
-  const userUpdateProfile = useSelector((state) => state.user.updateUser);
+  const userUpdateProfile = useSelector((state: any) => state.user.updateUser);
   const { error: errorUpdateUserDetails, loading: loadingUpdateUserDetails, success } = userUpdateProfile;
 
-  const orderListMy = useSelector((state) => state.order.listMyOrders);
+  const orderListMy = useSelector((state: any) => state.order.listMyOrders);
   const { error: errorOrderListMy, loading: loadingOrderListMy, orders } = orderListMy;
 
   useEffect(() => {
-    // if (!userInfo) {
-    //   router.push("/login");
-    // } else {
-    //   if (!user || !user.userName) {
-    //     dispatch({ type: USER_UPDATE_PROFILE_RESET });
-    //     dispatch(getUserDetails());
-    //   } else {
-    //     setFirstName(user.firstName);
-    //     setLastName(user.lastName);
-    //     setEmail(user.email);
-    //   }
-    // }
-    // dispatch(listMyOrdersAction());
+    if (!userInfo) {
+      router.push("/login");
+    } else {
+      if (!user || !user.userName) {
+        dispatch({ type: USER_UPDATE_PROFILE_RESET });
+        dispatch(getUserDetails() as any);
+      } else {
+        setFirstName(user.firstName);
+        setLastName(user.lastName);
+        setEmail(user.email);
+      }
+    }
   }, [dispatch, router, userInfo, user]);
 
-  const userProfileUpdateHandler = (e) => {
+  useEffect(() => {
+    if (userInfo) {
+      dispatch(listMyOrdersAction() as any);
+    }
+  }, [dispatch, userInfo]);
+
+  const userProfileUpdateHandler = (e: any) => {
     e.preventDefault();
-    setMessage(null);
+    setMessage("");
     if (password !== confirmPassword) {
       setMessage("Passwords do not match");
     } else {
-      dispatch(updateUserProfile({ firstName, lastName, email, password }));
+      dispatch(updateUserProfile({ firstName, lastName, email, password }) as any);
     }
   };
 
@@ -171,7 +176,7 @@ const ProfileScreen = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {orders?.map((order) => (
+                  {orders?.map((order: any) => (
                     <TableRow key={order.orderId}>
                       <TableCell>{order.orderId}</TableCell>
                       <TableCell>{order.created_at}</TableCell>

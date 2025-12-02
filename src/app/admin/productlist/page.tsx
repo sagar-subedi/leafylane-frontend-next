@@ -15,8 +15,14 @@ import {
   TableRow,
   Typography,
   Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
 import Message from "@/components/Message";
 import Loader from "@/components/Loader";
 import { listProducts, deleteProduct } from "@/store/slices/productSlice";
@@ -48,10 +54,24 @@ const ProductListScreen = () => {
     dispatch(listProducts(0));
   }, [dispatch, router, userInfo, successDelete, successCreate, createdProduct]);
 
-  const deleteHandler = (id) => {
-    if (window.confirm("Are you sure?")) {
-      dispatch(deleteProduct(id));
+  const [open, setOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+
+  const handleClickOpen = (id) => {
+    setDeleteId(id);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setDeleteId(null);
+  };
+
+  const confirmDeleteHandler = () => {
+    if (deleteId) {
+      dispatch(deleteProduct(deleteId));
     }
+    handleClose();
   };
 
   const createProductHandler = () => {
@@ -121,7 +141,7 @@ const ProductListScreen = () => {
                           variant="outlined"
                           size="small"
                           color="error"
-                          onClick={() => deleteHandler(product.productId)}
+                          onClick={() => handleClickOpen(product.productId)}
                         >
                           <i className="fas fa-trash"></i> Delete
                         </Button>
@@ -132,6 +152,31 @@ const ProductListScreen = () => {
               </TableBody>
             </Table>
           </TableContainer>
+
+          {/* Delete Confirmation Dialog */}
+          <Dialog
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {"Confirm Delete"}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Are you sure you want to delete this product? This action cannot be undone.
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={confirmDeleteHandler} color="error" autoFocus>
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
 
           {/* Pagination */}
           <Box className="mt-6 flex justify-center">

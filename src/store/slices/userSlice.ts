@@ -17,13 +17,13 @@ import { toast } from "react-toastify";
 // ? JSON.parse(getFromLocalStorage('userInfo')!) 
 //   : null;
 
-const userInfoFromStorage = typeof window !== 'undefined' && getFromLocalStorage('userInfo') 
-? JSON.parse(getFromLocalStorage('userInfo')!) 
+const userInfoFromStorage = typeof window !== 'undefined' && getFromLocalStorage('userInfo')
+  ? JSON.parse(getFromLocalStorage('userInfo')!)
   : null;
 
 export const login = createAsyncThunk(
   "user/login",
-  async ({ usernameOrEmail, password }, { rejectWithValue }) => {
+  async ({ usernameOrEmail, password }: any, { rejectWithValue }) => {
     try {
       const loginResponse = await postLoginApi({
         grant_type: "authorization_code",
@@ -43,7 +43,7 @@ export const login = createAsyncThunk(
 
 export const register = createAsyncThunk(
   "user/register",
-  async ({ userName, firstName, email, password }, { rejectWithValue }) => {
+  async ({ userName, firstName, email, password }: any, { rejectWithValue }) => {
     try {
       await postSignupApi({
         grant_type: "authorization_code",
@@ -52,14 +52,12 @@ export const register = createAsyncThunk(
         firstName,
         email,
       });
-    // Dispatch the login action after successful registration
-    toast.success('Successful Registration. You can now log in with your credentials.');
-    setTimeout(() => {
-      window.location.href = '/login';
-    }, 3000);
-    // await dispatch(login({ usernameOrEmail: userName, password }));
-    
-  } catch (error) {
+      // Dispatch the login action after successful registration
+      toast.success('Successful Registration. You can now log in with your credentials.');
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 3000);
+    } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }
   }
@@ -67,7 +65,7 @@ export const register = createAsyncThunk(
 
 export const getUserDetails = createAsyncThunk(
   "user/details",
-  async (userId, { rejectWithValue }) => {
+  async (userId: string | undefined, { rejectWithValue }) => {
     try {
       return userId ? await getUserApi(userId) : await getUserInfoApi();
     } catch (error) {
@@ -78,11 +76,12 @@ export const getUserDetails = createAsyncThunk(
 
 export const updateUserProfile = createAsyncThunk(
   "user/updateProfile",
-  async (user, { rejectWithValue }) => {
+  async (user: any, { rejectWithValue }) => {
     try {
       await putUserInfoApi(user);
+      const userInfoStr = getFromLocalStorage("userInfo");
       const updatedUserInfo = {
-        ...JSON.parse(getFromLocalStorage("userInfo")),
+        ...(userInfoStr ? JSON.parse(userInfoStr) : {}),
         ...user,
       };
       localStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
@@ -106,7 +105,7 @@ export const listUsers = createAsyncThunk(
 
 export const deleteUser = createAsyncThunk(
   "user/delete",
-  async (userId, { rejectWithValue }) => {
+  async (userId: string, { rejectWithValue }) => {
     try {
       await deleteUserApi(userId);
     } catch (error) {
@@ -117,8 +116,9 @@ export const deleteUser = createAsyncThunk(
 
 export const updateUser = createAsyncThunk(
   "user/update",
-  async ({ userId, userUpdateRequestBody }, { rejectWithValue, dispatch }) => {
+  async ({ userId, userUpdateRequestBody }: any, { rejectWithValue, dispatch }) => {
     try {
+      console.log("The user id in update user thunk is " + userId);
       await updateUserApi(userId, userUpdateRequestBody);
       dispatch(getUserDetails(userId));
       dispatch(listUsers());
@@ -143,6 +143,7 @@ const userSlice = createSlice({
     getUserDetails: {
       loading: false,
       error: null,
+      user: null,
     },
     updateUserProfile: {
       loading: false,
@@ -183,29 +184,30 @@ const userSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.login.loading = false;
-        state.login.error = action.payload;
+        state.login.error = action.payload as any;
       })
       .addCase(register.pending, (state) => {
         state.register.loading = true;
         state.register.error = null;
       })
       .addCase(register.fulfilled, (state, action) => {
-        state.register.loading = false; 
+        state.register.loading = false;
       })
       .addCase(register.rejected, (state, action) => {
         state.register.loading = false;
-        state.register.error = action.payload;
+        state.register.error = action.payload as any;
       })
       .addCase(getUserDetails.pending, (state) => {
         state.getUserDetails.loading = true;
       })
       .addCase(getUserDetails.fulfilled, (state, action) => {
         state.getUserDetails.loading = false;
+        state.getUserDetails.user = action.payload;
         state.userInfo = action.payload;
       })
       .addCase(getUserDetails.rejected, (state, action) => {
         state.getUserDetails.loading = false;
-        state.getUserDetails.error = action.payload;
+        state.getUserDetails.error = action.payload as any;
       })
       .addCase(updateUserProfile.fulfilled, (state, action) => {
         state.userInfo = action.payload;

@@ -1,22 +1,24 @@
+
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { 
-  getAllMyOrdersApi, 
-  previewOrderApi, 
-  placeOrderApi, 
-  getOrderApi, 
-  getAllOrdersApi 
+import {
+  getAllMyOrdersApi,
+  previewOrderApi,
+  placeOrderApi,
+  getOrderApi,
+  getAllOrdersApi,
+  deliverOrderApi
 } from '@/utils/RestApiCalls';
 import { getErrorMessage } from '@/utils/CommonUtils';
 import { getFromLocalStorage } from '@/utils/LocalStorageUtils';
 
-const billingAddressId = typeof window !== 'undefined' && getFromLocalStorage('billingAddressId') 
-  ? getFromLocalStorage('billingAddressId') 
+const billingAddressId = typeof window !== 'undefined' && getFromLocalStorage('billingAddressId')
+  ? getFromLocalStorage('billingAddressId')
   : null;
-const shippingAddressId = typeof window !== 'undefined' && getFromLocalStorage('shippingAddressId') 
-  ? getFromLocalStorage('shippingAddressId') 
+const shippingAddressId = typeof window !== 'undefined' && getFromLocalStorage('shippingAddressId')
+  ? getFromLocalStorage('shippingAddressId')
   : null;
-const paymentMethodId = typeof window !== 'undefined' && getFromLocalStorage('paymentMethodId') 
-  ? getFromLocalStorage('paymentMethodId') 
+const paymentMethodId = typeof window !== 'undefined' && getFromLocalStorage('paymentMethodId')
+  ? getFromLocalStorage('paymentMethodId')
   : null;
 
 
@@ -52,9 +54,17 @@ export const placeOrderAction = createAsyncThunk('orders/create', async (request
   }
 });
 
-export const getOrderDetailsAction = createAsyncThunk('orders/details', async (orderId, { rejectWithValue }) => {
+export const getOrderDetailsAction = createAsyncThunk('orders/details', async (orderId: string, { rejectWithValue }) => {
   try {
     return await getOrderApi(orderId);
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const deliverOrderAction = createAsyncThunk('orders/deliver', async (orderId: string, { rejectWithValue }) => {
+  try {
+    return await deliverOrderApi(orderId);
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
   }
@@ -71,6 +81,7 @@ const orderSlice = createSlice({
     previewOrder: { order: {}, loading: false, error: null },
     createOrder: { order: {}, loading: false, error: null },
     orderDetails: { order: {}, loading: true, error: null },
+    deliverOrder: { loading: false, error: null, success: false },
   },
   reducers: {
     saveBillingAddressId: (state, action) => {
@@ -96,6 +107,9 @@ const orderSlice = createSlice({
     },
     resetCreateOrder: (state) => {
       state.createOrder = { order: {}, loading: false, error: null };
+    },
+    resetDeliverOrder: (state) => {
+      state.deliverOrder = { loading: false, error: null, success: false };
     }
   },
   extraReducers: (builder) => {
@@ -144,6 +158,17 @@ const orderSlice = createSlice({
       })
       .addCase(getOrderDetailsAction.rejected, (state, action) => {
         state.orderDetails = { order: {}, loading: false, error: action.payload };
+      })
+      .addCase(deliverOrderAction.pending, (state) => {
+        state.deliverOrder.loading = true;
+      })
+      .addCase(deliverOrderAction.fulfilled, (state) => {
+        state.deliverOrder.loading = false;
+        state.deliverOrder.success = true;
+      })
+      .addCase(deliverOrderAction.rejected, (state, action) => {
+        state.deliverOrder.loading = false;
+        state.deliverOrder.error = action.payload;
       });
   }
 });
@@ -155,7 +180,8 @@ export const {
   resetListOrders,
   resetListMyOrders,
   resetPreviewOrder,
-  resetCreateOrder
+  resetCreateOrder,
+  resetDeliverOrder
 } = orderSlice.actions;
 
 export default orderSlice.reducer;

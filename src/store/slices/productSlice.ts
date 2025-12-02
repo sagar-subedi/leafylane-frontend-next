@@ -104,13 +104,13 @@ const productSlice = createSlice({
       loading: false,
       error: null,
       success: false
-    }, 
+    },
     createProduct: {
       products: [],
       loading: false,
       error: null,
       success: false
-    },    
+    },
     updateProduct: {
       products: [],
       loading: false,
@@ -151,8 +151,16 @@ const productSlice = createSlice({
       .addCase(createProductReview.fulfilled, (state) => {
         state.success = true;
       })
+      .addCase(deleteProduct.pending, (state) => {
+        state.deleteProduct.loading = true;
+      })
       .addCase(deleteProduct.fulfilled, (state) => {
-        state.success = true;
+        state.deleteProduct.loading = false;
+        state.deleteProduct.success = true;
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
+        state.deleteProduct.loading = false;
+        state.deleteProduct.error = action.payload;
       })
       .addCase(createProduct.fulfilled, (state, action) => {
         state.success = true;

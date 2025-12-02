@@ -149,6 +149,10 @@ export const createProductReviewApi = async (createProductReviewRequestBody) => 
 export const uploadImageApi = async (axiosConfig, formData) => {
   const accessToken = JSON.parse(getFromLocalStorage('userInfo'))?.token;
 
+  if (!axiosConfig.headers) {
+    axiosConfig.headers = {};
+  }
+
   if (accessToken) {
     axiosConfig.headers.Authorization = `Bearer ${accessToken}`;
   }
@@ -245,6 +249,14 @@ export const placeOrderApi = async (placeOrderRequestBody) => {
 export const getOrderApi = async (orderId) => {
   const axiosConfig = getAxiosConfig();
   const responseData = axios.get(`${BACKEND_API_GATEWAY_URL}/api/order/order/${orderId}`, axiosConfig).then((response) => {
+    return response.data;
+  });
+  return responseData;
+};
+
+export const deliverOrderApi = async (orderId) => {
+  const axiosConfig = getAxiosConfig();
+  const responseData = await axios.put(`${BACKEND_API_GATEWAY_URL}/api/order/order/${orderId}/deliver`, {}, axiosConfig).then((response) => {
     return response.data;
   });
   return responseData;
