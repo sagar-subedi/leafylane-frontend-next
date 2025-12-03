@@ -34,9 +34,6 @@ const HomeScreen = () => {
 
   return (
     <>
-      {/* Hero Carousel - Full Width */}
-      <HeroCarousel />
-
       {/* Products Section - Contained */}
       <Container maxWidth="xl" sx={{ mb: 8, mt: 6 }}>
         <Box sx={{ textAlign: 'center', mb: 6 }}>
