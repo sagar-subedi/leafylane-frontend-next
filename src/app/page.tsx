@@ -1,90 +1,238 @@
 "use client";
-// import { SET_NAME } from "@/store/slices/profileSlice";
-// import Image from "next/image";
-// import { useRef } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-
-// function DisplayName() {
-//   const { name } = useSelector((state) => state.profile);
-//   return (
-//     <h1> I am {name} !!</h1>
-//   );
-// }
-// export default function Home() {
-//   const inputName = useRef("");
-//   const dispatch = useDispatch();
-//   function submitName() {
-//     dispatch(SET_NAME(inputName.current.value));
-//   }
-//   return (
-//     <>
-//       <main>
-//         <input placeholder='enter name' ref={inputName} />
-//         <button onClick={submitName}>Enter name</button>
-//         <DisplayName />
-//       </main>
-//     </>
-//   );
-// }
 
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Product from "@/components/Product";
 import Message from "@/components/Message";
-import { Col, Row } from "react-bootstrap";
 import FullPageLoader from "@/components/FullPageLoader";
-import ReactPaginate from "react-paginate";
 import { listProducts } from "@/store/slices/productSlice";
 import { setupAxiosInterceptors } from "../utils/refreshTokenInterceptor";
-import { Pagination } from "@mui/material";
+import { Pagination, Container, Box, Typography, Button } from "@mui/material";
+import LocalFloristIcon from "@mui/icons-material/LocalFlorist";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import Link from "next/link";
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
-  const productList = useSelector((state) => state.product);
+  const productList = useSelector((state: any) => state.product);
   const { loading, error, products, pageResponse } = productList;
 
   setupAxiosInterceptors();
 
   useEffect(() => {
-    dispatch(listProducts(0));
+    dispatch(listProducts(0) as any);
   }, [dispatch]);
 
-  const handlePageClick = (data) => {
+  const handlePageClick = (data: any) => {
     const selected = data.selected;
-    dispatch(listProducts(selected));
+    dispatch(listProducts(selected) as any);
   };
 
   return (
     <>
-      <h1 className="text-4xl font-extrabold text-center text-gray-800 mb-8">
-        Latest Products
-      </h1>
-      {error ? (
-        <Message variant="danger">Something wrong happened</Message>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full max-w-7xl px-4">
-            {products.map((product) => (
-              <div key={product.productId}>
-                <Product product={product} />
-              </div>
-            ))}
-          </div>
-          {/* pageResponse?.pageable?.pageNumber */}
-          <div className="flex justify-center mt-6">
-            <Pagination
-              count={pageResponse?.totalPages || 0}
-              page={pageResponse?.pageable?.pageNumber + 1 || 1}
-              onChange={(event, page) =>
-                handlePageClick({ selected: page - 1 })
-              }
-              variant="outlined"
-              shape="rounded"
-              color="primary"
-            />
-          </div>
-        </>
-      )}
+      {/* Hero Section */}
+      <Box
+        className="gradient-primary animate-fadeIn"
+        sx={{
+          position: 'relative',
+          overflow: 'hidden',
+          py: { xs: 8, md: 12 },
+          width: '100%',
+          margin: 0,
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box
+            sx={{
+              textAlign: 'center',
+              position: 'relative',
+              zIndex: 1,
+            }}
+          >
+            <Box className="flex justify-center mb-4 animate-slideDown">
+              <LocalFloristIcon
+                sx={{
+                  fontSize: { xs: 60, md: 80 },
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1))',
+                }}
+              />
+            </Box>
+
+            <Typography
+              variant="h2"
+              className="animate-slideUp"
+              sx={{
+                fontFamily: "'Poppins', sans-serif",
+                fontWeight: 800,
+                color: 'white',
+                mb: 2,
+                fontSize: { xs: '2rem', sm: '2.5rem', md: '3.5rem' },
+                textShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+              }}
+            >
+              Welcome to LeafyLane
+            </Typography>
+
+            <Typography
+              variant="h5"
+              className="animate-slideUp"
+              sx={{
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 400,
+                color: 'rgba(255, 255, 255, 0.95)',
+                mb: 4,
+                maxWidth: '600px',
+                mx: 'auto',
+                fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' },
+                lineHeight: 1.6,
+              }}
+            >
+              Discover beautiful plants that bring life to your space
+            </Typography>
+
+            <Link href="/cart" passHref style={{ textDecoration: 'none' }}>
+              <Button
+                variant="contained"
+                size="large"
+                endIcon={<ArrowForwardIcon />}
+                className="animate-scaleIn"
+                sx={{
+                  backgroundColor: 'white',
+                  color: '#2D6A4F',
+                  fontWeight: 600,
+                  fontSize: { xs: '0.9rem', md: '1.1rem' },
+                  px: { xs: 3, md: 4 },
+                  py: { xs: 1.5, md: 2 },
+                  borderRadius: '50px',
+                  textTransform: 'none',
+                  boxShadow: '0 8px 20px rgba(0, 0, 0, 0.15)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    backgroundColor: '#F8FBF9',
+                    transform: 'translateY(-3px)',
+                    boxShadow: '0 12px 30px rgba(0, 0, 0, 0.2)',
+                  },
+                }}
+              >
+                Shop Now
+              </Button>
+            </Link>
+          </Box>
+        </Container>
+
+        {/* Decorative Elements */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: -50,
+            right: -50,
+            width: 200,
+            height: 200,
+            borderRadius: '50%',
+            background: 'rgba(255, 255, 255, 0.1)',
+            filter: 'blur(40px)',
+          }}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: -30,
+            left: -30,
+            width: 150,
+            height: 150,
+            borderRadius: '50%',
+            background: 'rgba(255, 255, 255, 0.1)',
+            filter: 'blur(40px)',
+          }}
+        />
+      </Box>
+
+      {/* Products Section */}
+      <Container maxWidth="xl" sx={{ mb: 8 }}>
+        <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Typography
+            variant="h3"
+            className="animate-slideUp"
+            sx={{
+              fontFamily: "'Poppins', sans-serif",
+              fontWeight: 700,
+              color: '#1B4332',
+              mb: 2,
+              fontSize: { xs: '1.75rem', sm: '2.25rem', md: '3rem' },
+            }}
+          >
+            Latest Products
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{
+              color: '#6B7280',
+              fontSize: { xs: '0.95rem', md: '1.1rem' },
+              maxWidth: '600px',
+              mx: 'auto',
+            }}
+          >
+            Explore our curated collection of beautiful plants
+          </Typography>
+        </Box>
+
+        {error ? (
+          <Message variant="danger">Something wrong happened</Message>
+        ) : (
+          <>
+            <Box
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              sx={{
+                mb: 6,
+              }}
+            >
+              {products.map((product: any, index: number) => (
+                <Box
+                  key={product.productId}
+                  className="animate-slideUp"
+                  sx={{
+                    animationDelay: `${index * 0.1}s`,
+                  }}
+                >
+                  <Product product={product} />
+                </Box>
+              ))}
+            </Box>
+
+            {/* Pagination */}
+            <Box className="flex justify-center">
+              <Pagination
+                count={pageResponse?.totalPages || 0}
+                page={pageResponse?.pageable?.pageNumber + 1 || 1}
+                onChange={(event, page) =>
+                  handlePageClick({ selected: page - 1 })
+                }
+                variant="outlined"
+                shape="rounded"
+                size="large"
+                sx={{
+                  '& .MuiPaginationItem-root': {
+                    fontWeight: 600,
+                    fontSize: '1rem',
+                    '&.Mui-selected': {
+                      backgroundColor: '#2D6A4F',
+                      color: 'white',
+                      '&:hover': {
+                        backgroundColor: '#1B4332',
+                      },
+                    },
+                    '&:hover': {
+                      backgroundColor: 'rgba(45, 106, 79, 0.08)',
+                    },
+                  },
+                }}
+              />
+            </Box>
+          </>
+        )}
+      </Container>
+
       {loading && <FullPageLoader></FullPageLoader>}
     </>
   );

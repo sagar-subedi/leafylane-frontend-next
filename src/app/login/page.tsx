@@ -45,8 +45,8 @@ const LoginScreen = () => {
     // dispatch(login({ userNameOrEmail, password }));
   };
 
-  const AUTH_URL = "https://oauth2-auth-server.sagar88.com.np/api/auth/authorize";
-  const LOGIN_URL = "https://oauth2-auth-server.sagar88.com.np/api/auth/login"
+  const AUTH_URL = "http://localhost:9080/api/auth/authorize";
+  const LOGIN_URL = "http://localhost:9080/api/auth/login"
   const CLIENT_ID = "leafylane-client";
   const REDIRECT_URI = "https://leafylane.sagar88.com.np/callback"; // Change to match frontend
   const SCOPE = "store.shop offline_access";
@@ -86,7 +86,7 @@ const LoginScreen = () => {
 
   async function exchangeAuthorizationCode(authorizationCode: any, codeVerifier: any) {
     try {
-      const response = await fetch("https://oauth2-auth-server.sagar88.com.np/oauth2/token", {
+      const response = await fetch("http://localhost:9080/oauth2/token", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({

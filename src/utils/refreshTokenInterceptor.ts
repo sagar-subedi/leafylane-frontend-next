@@ -23,7 +23,7 @@ export function setupAxiosInterceptors() {
         if (refreshToken) {
           try {
             const response = await axios.post(
-              "https://oauth2-auth-server.sagar88.com.np/oauth2/token",
+              "http://localhost:9080/oauth2/token",
               new URLSearchParams({
                 grant_type: "refresh_token",
                 client_id: "leafylane-client",
