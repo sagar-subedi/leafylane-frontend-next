@@ -12,21 +12,21 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-      <html>
-        <body>
+    <html>
+      <body>
         <Provider store={store}>
-        <Header/>
-        <ToastContainer position="top-right" autoClose={3000} />
-        <main className="flex justify-center py-3">
-          <div className="container">
-          <Suspense fallback={<div>Loading...</div>}>
-            {children}
-          </Suspense>
+          <Header />
+          <ToastContainer position="top-right" autoClose={3000} />
+          <main className="flex justify-center">
+            <div className="container">
+              <Suspense fallback={<div>Loading...</div>}>
+                {children}
+              </Suspense>
             </div>
-        </main>
-        <Footer />
-      </Provider>
-        </body>
-      </html>
+          </main>
+          <Footer />
+        </Provider>
+      </body>
+    </html>
   );
 }
