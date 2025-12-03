@@ -12,7 +12,7 @@ import {
 import { getErrorMessage } from '@/utils/CommonUtils';
 
 // Async Thunks
-export const listProducts = createAsyncThunk('products/list', async (pageNumber, { rejectWithValue }) => {
+export const listProducts = createAsyncThunk('products/list', async (pageNumber: number, { rejectWithValue }) => {
   try {
     const allProductsDetail = await getAllProductsDetailApi(pageNumber || 0);
     return { products: allProductsDetail.page.content, pageResponse: allProductsDetail.page };
@@ -21,7 +21,7 @@ export const listProducts = createAsyncThunk('products/list', async (pageNumber,
   }
 });
 
-export const listProductDetails = createAsyncThunk('products/details', async (productId, { rejectWithValue }) => {
+export const listProductDetails = createAsyncThunk('products/details', async (productId: string, { rejectWithValue }) => {
   try {
     return await getProductDetailApi(productId);
   } catch (error) {
@@ -29,7 +29,7 @@ export const listProductDetails = createAsyncThunk('products/details', async (pr
   }
 });
 
-export const listProductReviews = createAsyncThunk('products/reviews', async (productId, { rejectWithValue }) => {
+export const listProductReviews = createAsyncThunk('products/reviews', async (productId: string, { rejectWithValue }) => {
   try {
     return await getProductReviewsApi(productId);
   } catch (error) {
@@ -37,7 +37,7 @@ export const listProductReviews = createAsyncThunk('products/reviews', async (pr
   }
 });
 
-export const createProductReview = createAsyncThunk('products/createReview', async (reviewData, { rejectWithValue, dispatch }) => {
+export const createProductReview = createAsyncThunk('products/createReview', async (reviewData: any, { rejectWithValue, dispatch }) => {
   try {
     await createProductReviewApi(reviewData);
     dispatch(listProductDetails(reviewData.productId));
@@ -48,7 +48,7 @@ export const createProductReview = createAsyncThunk('products/createReview', asy
   }
 });
 
-export const deleteProduct = createAsyncThunk('products/delete', async (productId, { rejectWithValue }) => {
+export const deleteProduct = createAsyncThunk('products/delete', async (productId: string, { rejectWithValue }) => {
   try {
     await deleteProductApi(productId);
     return;
@@ -57,7 +57,7 @@ export const deleteProduct = createAsyncThunk('products/delete', async (productI
   }
 });
 
-export const createProduct = createAsyncThunk('products/create', async (productData, { rejectWithValue }) => {
+export const createProduct = createAsyncThunk('products/create', async (productData: any, { rejectWithValue }) => {
   try {
     return await createProductApi(productData);
   } catch (error) {
@@ -65,7 +65,7 @@ export const createProduct = createAsyncThunk('products/create', async (productD
   }
 });
 
-export const updateProduct = createAsyncThunk('products/update', async (productData, { rejectWithValue, dispatch }) => {
+export const updateProduct = createAsyncThunk('products/update', async (productData: any, { rejectWithValue, dispatch }) => {
   try {
     await updateProductDetailApi(productData);
     dispatch(listProductDetails(productData.productId));
@@ -75,7 +75,7 @@ export const updateProduct = createAsyncThunk('products/update', async (productD
   }
 });
 
-export const getImage = createAsyncThunk('products/image', async (imageId, { rejectWithValue }) => {
+export const getImage = createAsyncThunk('products/image', async (imageId: string, { rejectWithValue }) => {
   try {
     return await getImageApi(imageId);
   } catch (error) {
@@ -88,12 +88,14 @@ const productSlice = createSlice({
   name: 'products',
   initialState: {
     products: [],
+    pageResponse: {}, // Added pageResponse
     product: {},
     reviews: {
       loading: false,
       error: null,
       reviews: []
     },
+    // ... (rest of initial state)
     deleteProduct: {
       loading: false,
       error: null,

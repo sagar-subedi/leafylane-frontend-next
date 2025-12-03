@@ -9,6 +9,7 @@ import { listProducts } from "@/store/slices/productSlice";
 import { setupAxiosInterceptors } from "../utils/refreshTokenInterceptor";
 import { Container, Box, Typography, Button } from "@mui/material";
 import Paginate from "@/components/Paginate";
+import TechStackSection from "@/components/TechStackSection";
 import LocalFloristIcon from "@mui/icons-material/LocalFlorist";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import Link from "next/link";
@@ -212,6 +213,9 @@ const HomeScreen = () => {
           </>
         )}
       </Container>
+
+      {/* Tech Stack Section */}
+      <TechStackSection />
 
       {loading && <FullPageLoader></FullPageLoader>}
     </>
