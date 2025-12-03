@@ -83,8 +83,8 @@ const HomeScreen = () => {
                 mb: 6,
               }}
             >
-              {products.map((product) => (
-                <Product key={product._id} product={product} />
+              {products.map((product: any) => (
+                <Product key={product._id || product.productId} product={product} />
               ))}
             </Box>
 
@@ -93,7 +93,6 @@ const HomeScreen = () => {
                 <Paginate
                   pages={pages}
                   page={page ?? 1}
-                  keyword={keyword}
                   changeHandler={handlePageClick}
                 />
               </Box>
