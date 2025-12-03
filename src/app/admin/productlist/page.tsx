@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Box,
   Button,
-  CircularProgress,
   Table,
   TableBody,
   TableCell,
@@ -26,12 +25,11 @@ import {
   Tooltip,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
 import Message from "@/components/Message";
 import Loader from "@/components/Loader";
 import { listProducts, deleteProduct } from "@/store/slices/productSlice";
 import { PRODUCT_CREATE_RESET } from "@/constants/productConstants";
-import ReactPaginate from "react-paginate";
+import Paginate from "@/components/Paginate";
 import { isAdmin } from "@/utils/CommonUtils";
 import AddIcon from "@mui/icons-material/Add";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -86,8 +84,8 @@ const ProductListScreen = () => {
     router.push("/admin/product/create");
   };
 
-  const handlePageClick = (data: any) => {
-    dispatch(listProducts(data.selected) as any);
+  const handlePageClick = (page: number) => {
+    dispatch(listProducts(page - 1) as any);
   };
 
   return (
@@ -300,20 +298,10 @@ const ProductListScreen = () => {
 
           {/* Pagination */}
           <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
-            <ReactPaginate
-              previousLabel={"Previous"}
-              nextLabel={"Next"}
-              breakLabel={"..."}
-              breakClassName={"break-me"}
-              pageCount={pageResponse?.totalPages}
-              marginPagesDisplayed={2}
-              pageRangeDisplayed={5}
-              onPageChange={handlePageClick}
-              containerClassName={"pagination"}
-              activeClassName={"page-item active"}
-              pageLinkClassName={"page-link"}
-              previousClassName={"page-link"}
-              nextClassName={"page-link"}
+            <Paginate
+              pages={pageResponse?.totalPages}
+              page={pageResponse?.pageable?.pageNumber + 1}
+              changeHandler={handlePageClick}
             />
           </Box>
         </>

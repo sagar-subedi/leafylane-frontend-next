@@ -7,7 +7,8 @@ import Message from "@/components/Message";
 import FullPageLoader from "@/components/FullPageLoader";
 import { listProducts } from "@/store/slices/productSlice";
 import { setupAxiosInterceptors } from "../utils/refreshTokenInterceptor";
-import { Pagination, Container, Box, Typography, Button } from "@mui/material";
+import { Container, Box, Typography, Button } from "@mui/material";
+import Paginate from "@/components/Paginate";
 import LocalFloristIcon from "@mui/icons-material/LocalFlorist";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import Link from "next/link";
@@ -202,31 +203,10 @@ const HomeScreen = () => {
 
             {/* Pagination */}
             <Box className="flex justify-center">
-              <Pagination
-                count={pageResponse?.totalPages || 0}
+              <Paginate
+                pages={pageResponse?.totalPages || 0}
                 page={pageResponse?.pageable?.pageNumber + 1 || 1}
-                onChange={(event, page) =>
-                  handlePageClick({ selected: page - 1 })
-                }
-                variant="outlined"
-                shape="rounded"
-                size="large"
-                sx={{
-                  '& .MuiPaginationItem-root': {
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    '&.Mui-selected': {
-                      backgroundColor: '#2D6A4F',
-                      color: 'white',
-                      '&:hover': {
-                        backgroundColor: '#1B4332',
-                      },
-                    },
-                    '&:hover': {
-                      backgroundColor: 'rgba(45, 106, 79, 0.08)',
-                    },
-                  },
-                }}
+                changeHandler={(page) => handlePageClick({ selected: page - 1 })}
               />
             </Box>
           </>
