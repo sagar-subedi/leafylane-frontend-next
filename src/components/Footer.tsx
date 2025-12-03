@@ -48,18 +48,6 @@ const Footer = () => {
         overflow: 'hidden',
       }}
     >
-      {/* Decorative top wave */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '4px',
-          background: 'linear-gradient(90deg, #52b788 0%, #74c69d 50%, #95d5b2 100%)',
-        }}
-      />
-
       {/* Main Footer Content */}
       <Container maxWidth="xl" sx={{ pt: 10, pb: 6 }}>
         <Grid container spacing={6}>
