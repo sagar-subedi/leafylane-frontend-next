@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useDispatch, useSelector } from "react-redux";
 import Product from "@/components/Product";
 import FullPageLoader from "@/components/FullPageLoader";
 import { listProducts } from "@/store/slices/productSlice";
@@ -9,12 +9,11 @@ import { setupAxiosInterceptors } from "../utils/refreshTokenInterceptor";
 import { Container, Box, Typography } from "@mui/material";
 import Paginate from "@/components/Paginate";
 import HeroCarousel from "@/components/HeroCarousel";
-import Link from "next/link";
 
 const HomeScreen = () => {
-  const dispatch = useAppDispatch();
-  const { products, page, pages, loading, error } = useAppSelector(
-    (state) => state.product
+  const dispatch = useDispatch();
+  const { products, page, pages, loading, error } = useSelector(
+    (state: any) => state.product
   );
 
   const searchParams = useSearchParams();
@@ -26,11 +25,11 @@ const HomeScreen = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(listProducts({ keyword, pageNumber: Number(pageResponse) }));
+    dispatch(listProducts(Number(pageResponse) - 1) as any);
   }, [dispatch, keyword, pageResponse]);
 
   const handlePageClick = (pageNumber: number) => {
-    dispatch(listProducts({ keyword, pageNumber }));
+    dispatch(listProducts(pageNumber - 1) as any);
   };
 
   return (
