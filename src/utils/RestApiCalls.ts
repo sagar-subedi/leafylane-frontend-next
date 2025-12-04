@@ -256,7 +256,7 @@ export const getOrderApi = async (orderId) => {
 
 export const deliverOrderApi = async (orderId) => {
   const axiosConfig = getAxiosConfig();
-  const responseData = await axios.put(`${BACKEND_API_GATEWAY_URL}/api/order/order/${orderId}/deliver`, {}, axiosConfig).then((response) => {
+  const responseData = await axios.put(`${BACKEND_API_GATEWAY_URL}/api/order/orders/${orderId}/deliver`, {}, axiosConfig).then((response) => {
     return response.data;
   });
   return responseData;
