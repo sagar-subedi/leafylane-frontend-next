@@ -130,7 +130,7 @@ const ShippingScreen = () => {
       <CheckoutSteps step1 step2 />
 
       <Grid container spacing={4}>
-        <Grid item xs={12} md={7}>
+        <Grid xs={12} md={7}>
           <Paper
             elevation={0}
             sx={{
@@ -390,9 +390,11 @@ const ShippingScreen = () => {
                     disabled={addressSaveLoading}
                     sx={{
                       mt: 2,
-                      bgcolor: 'var(--color-primary)',
-                      '&:hover': { bgcolor: 'var(--color-primary-dark)' },
-                      py: 1.5
+                      bgcolor: '#2D6A4F', // Hardcoded primary color
+                      color: '#ffffff',   // Explicit white text
+                      '&:hover': { bgcolor: '#1B4332' },
+                      py: 1.5,
+                      fontWeight: 600
                     }}
                   >
                     {addressSaveLoading ? (
@@ -413,16 +415,16 @@ const ShippingScreen = () => {
               size="large"
               onClick={proceedToPayment}
               disabled={!shippingAddressId}
-              startIcon={<LocalShippingIcon />}
+              endIcon={<LocalShippingIcon />}
               sx={{
-                bgcolor: 'var(--color-accent)',
+                bgcolor: '#52B788',
+                color: '#ffffff',
                 '&:hover': { bgcolor: '#40916C' },
                 py: 2,
                 fontSize: '1.1rem',
                 fontWeight: 600,
                 boxShadow: 'var(--shadow-lg)'
-              }}
-            >
+              }}  >
               Proceed to Payment
             </Button>
           </Box>

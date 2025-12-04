@@ -92,7 +92,7 @@ const PaymentScreen = () => {
       <CheckoutSteps step1 step2 step3 />
 
       <Grid container spacing={4}>
-        <Grid item xs={12} md={7}>
+        <Grid xs={12} md={7}>
           <Paper
             elevation={0}
             sx={{
@@ -180,7 +180,7 @@ const PaymentScreen = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={5}>
+        <Grid xs={12} md={5}>
           <Paper
             elevation={0}
             sx={{
@@ -201,7 +201,7 @@ const PaymentScreen = () => {
 
             <form onSubmit={(e) => e.preventDefault()}>
               <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid xs={12}>
                   <TextField
                     label="Card Number"
                     fullWidth
@@ -215,7 +215,7 @@ const PaymentScreen = () => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid xs={6}>
                   <TextField
                     label="Exp Month (MM)"
                     fullWidth
@@ -226,7 +226,7 @@ const PaymentScreen = () => {
                     size="small"
                   />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid xs={6}>
                   <TextField
                     label="Exp Year (YY)"
                     fullWidth
@@ -237,7 +237,7 @@ const PaymentScreen = () => {
                     size="small"
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid xs={12}>
                   <TextField
                     label="CVV"
                     fullWidth
@@ -249,7 +249,7 @@ const PaymentScreen = () => {
                     type="password"
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid xs={12}>
                   <Button
                     type="button"
                     variant="contained"
@@ -258,9 +258,11 @@ const PaymentScreen = () => {
                     disabled={saveLoading}
                     sx={{
                       mt: 2,
-                      bgcolor: 'var(--color-primary)',
-                      '&:hover': { bgcolor: 'var(--color-primary-dark)' },
-                      py: 1.5
+                      bgcolor: '#2D6A4F',
+                      color: '#ffffff',
+                      '&:hover': { bgcolor: '#1B4332' },
+                      py: 1.5,
+                      fontWeight: 600
                     }}
                   >
                     {saveLoading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : "Add Card"}
@@ -279,7 +281,8 @@ const PaymentScreen = () => {
               disabled={!paymentMethodId}
               endIcon={<PaymentIcon />}
               sx={{
-                bgcolor: 'var(--color-accent)',
+                bgcolor: '#52B788',
+                color: '#ffffff',
                 '&:hover': { bgcolor: '#40916C' },
                 py: 2,
                 fontSize: '1.1rem',
