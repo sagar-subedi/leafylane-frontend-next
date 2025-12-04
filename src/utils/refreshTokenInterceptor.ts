@@ -2,6 +2,7 @@ import store from "@/store/store";
 import axios from "axios";
 import { getFromLocalStorage } from "./LocalStorageUtils";
 import { logout } from "@/store/slices/userSlice";
+import { config } from "@/config/env";
 
 export function setupAxiosInterceptors() {
   axios.interceptors.response.use(
@@ -23,10 +24,10 @@ export function setupAxiosInterceptors() {
         if (refreshToken) {
           try {
             const response = await axios.post(
-              "http://localhost:9080/oauth2/token",
+              `${config.authServerUrl}/oauth2/token`,
               new URLSearchParams({
                 grant_type: "refresh_token",
-                client_id: "leafylane-client",
+                client_id: config.clientId,
                 client_secret: "leafylane-client",
                 refresh_token: refreshToken,
               }),

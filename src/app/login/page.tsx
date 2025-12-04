@@ -15,6 +15,7 @@ import { USER_LOGIN_SUCCESS } from "@/constants/userConstants";
 import { Box, Button, CircularProgress, TextField, Typography, Paper, Container, Divider } from "@mui/material";
 import LocalFloristIcon from "@mui/icons-material/LocalFlorist";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { config } from "@/config/env";
 
 const LoginScreen = () => {
   const [userNameOrEmail, setUserNameOrEmail] = useState("");
@@ -47,12 +48,13 @@ const LoginScreen = () => {
     // dispatch(login({ userNameOrEmail, password }));
   };
 
-  const AUTH_URL = "http://localhost:9080/api/auth/authorize";
-  const LOGIN_URL = "http://localhost:9080/api/auth/login"
-  const CLIENT_ID = "leafylane-client";
-  const REDIRECT_URI = "https://leafylane.sagar88.com.np/callback"; // Change to match frontend
-  const SCOPE = "store.shop offline_access";
-  const STATE = "dJMLwhM2coXgXTiQ5m4ooL66Bo1z94tqwlcYGTFiiu8=";
+  const AUTH_URL = `${config.authServerUrl}/api/auth/authorize`;
+  const LOGIN_URL = `${config.authServerUrl}/api/auth/login`;
+  const TOKEN_URL = `${config.authServerUrl}/oauth2/token`;
+  const CLIENT_ID = config.clientId;
+  const REDIRECT_URI = config.callbackUrl;
+  const SCOPE = config.scope;
+  const STATE = config.state;
 
   const loginWithOAuth = () => {
     const authUrl = `${AUTH_URL}?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
@@ -69,12 +71,12 @@ const LoginScreen = () => {
       body: new URLSearchParams({
         username,
         password,
-        clientId: "leafylane-client-spa",
-        codeChallenge: "Xs5p9CFnsixtb5Fnq5JK9E0Kj5eh0WBhFuvvhAfhrMo",
-        codeChallengeMethod: "S256",
-        redirectUri: "http://localhost:3000/callback",
-        scope: "store.shop offline_access",
-        state: "dJMLwhM2coXgXTiQ5m4ooL66Bo1z94tqwlcYGTFiiu8"
+        clientId: config.clientId,
+        codeChallenge: config.codeChallenge,
+        codeChallengeMethod: config.codeChallengeMethod,
+        redirectUri: config.callbackUrl,
+        scope: config.scope,
+        state: config.state
       }),
     });
     const data = await response.json();
@@ -88,17 +90,17 @@ const LoginScreen = () => {
 
   async function exchangeAuthorizationCode(authorizationCode: any, codeVerifier: any) {
     try {
-      const response = await fetch("http://localhost:9080/oauth2/token", {
+      const response = await fetch(TOKEN_URL, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
           grant_type: "authorization_code",
           code: authorizationCode,
-          redirect_uri: "http://localhost:3000/callback",
-          client_id: "leafylane-client-spa",
-          code_verifier: "pUh2fQtq~Cqc~aWskoZK2BWEFezeLZCK1rADtcvVbdh",
-          state: "dJMLwhM2coXgXTiQ5m4ooL66Bo1z94tqwlcYGTFiiu8",
-          scope: "store.shop offline_access",
+          redirect_uri: config.callbackUrl,
+          client_id: config.clientId,
+          code_verifier: config.codeVerifier,
+          state: config.state,
+          scope: config.scope,
         }),
       });
 

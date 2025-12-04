@@ -4,8 +4,9 @@ import axios from "axios";
 import { useDispatch } from 'react-redux';
 import { USER_LOGIN_SUCCESS } from "@/constants/userConstants";
 import { getUserInfoApi } from "@/utils/RestApiCalls";
+import { config } from "@/config/env";
 
-const TOKEN_URL = "https://oauth2-auth-server.sagar88.com.np/oauth2/token";
+const TOKEN_URL = `${config.authServerUrl}/oauth2/token`;
 const CLIENT_SECRET = "leafylane-client"; // ⚠️ Don't expose this in frontend! Use a backend proxy instead.
 
 const Callback = () => {
@@ -19,18 +20,17 @@ const Callback = () => {
     }
   }, []);
 
-  const exchangeCodeForToken = async (code) => {
+  const exchangeCodeForToken = async (code: string) => {
     try {
       const response = await axios.post(
         TOKEN_URL,
         new URLSearchParams({
           grant_type: "authorization_code",
           code,
-          // redirect_uri: "http://localhost:3000/callback",
-          redirect_uri: "https://leafylane.sagar88.com.np/callback", // Change to match frontend
-          client_id: "leafylane-client",
+          redirect_uri: config.callbackUrl,
+          client_id: config.clientId,
           client_secret: CLIENT_SECRET, // ⚠️ Better to use a backend proxy instead of exposing this
-          scope: "store.shop offline_access"
+          scope: config.scope
         }),
         {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -43,17 +43,17 @@ const Callback = () => {
         refresh_token
       };
       localStorage.setItem('userInfo', JSON.stringify(userInfo));
-  
+
       //Get UserInfo
       const userInfoResponse = await getUserInfoApi();
       userInfoResponse.token = access_token;
       userInfoResponse.refresh_token = refresh_token;
-   
+
       dispatch({
         type: USER_LOGIN_SUCCESS,
         payload: userInfoResponse
       });
-  
+
       localStorage.setItem('userInfo', JSON.stringify(userInfoResponse));
 
       // Save tokens in localStorage (or sessionStorage)
